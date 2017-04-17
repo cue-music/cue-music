@@ -12,6 +12,9 @@
     <link rel="stylesheet" type="text/css" href="build/css/main.css" />
 
     <body>
-        <h1>Hello World!</h1>
+        <div class="app" ng-app="app" ng-controller="MainCtrl">
+            <input type="text" ng-model="name" />
+            <test-component name="name"></test-component>
+        </div>
     </body>
 </html>

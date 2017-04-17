@@ -1,2 +1,12 @@
+.test-component {
+  background-color: blue; }
+  .test-component h1 {
+    color: orange; }
+
 body {
   background-color: purple; }
+
+.test-component {
+  background-color: blue; }
+  .test-component h1 {
+    color: orange; }

@@ -4,8 +4,7 @@
   "description": "Team Members: Alex Bieg, Susan Wolfgram, Billy Ding, Sung-Duk Kang, Yi Pang",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "gulp run ; node index.js"
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
     "type": "git",
@@ -24,5 +23,8 @@
     "gulp-livereload": "^3.8.1",
     "gulp-sass": "^3.1.0",
     "vinyl-source-stream": "^1.1.0"
+  },
+  "dependencies": {
+    "angular": "^1.5.8"
   }
 }
