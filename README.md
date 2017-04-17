@@ -2,29 +2,20 @@
 
 Team Members: Alex Bieg, Susan Wolfgram, Billy Ding, Sung-Duk Kang, Yi Pang
 
-# Mission Statement
-To make music more accessible and social.
+## Homework and Questions
 
-# Problem Statement
+Our homework submissions have been moved to our [wiki page](https://github.com/cue-music/cue-music/wiki). Any questions you might have should also be able to be answered there.
 
-Streaming services are many people’s primary method of listening to music. Unfortunately none of these services contain all of the music that a user might want to listen to. Additionally, the ability to share playlists across services is not a feature that exists yet. 
+## Repo Setup
 
-Suppose you use both Spotify and SoundCloud. You want to create a playlist of songs X, Y, and Z. X and Y are on Spotify and Z is on SoundCloud. Currently there is no single place to listen to all of these songs in a single playlist.
+Here are the steps to set up the repository correctly for development:
 
-## Roles
-Alex: Engineering and Support
+1. Clone the repository.
+2. Install [NodeJS](https://nodejs.org/en/) (Skip if node is already installed)
+3. Install Gulp-CLI with `npm install gulp-cli -g` (Skip if gulp-cli is already installed)
+4. Install all node packages with `npm install`
+5. (Optional) Install the [Livereload](https://chrome.google.com/webstore/detail/livereload/jnihajbhpnppcggbcgedagnkighmdlei) browser plugin. (Allows the browser to reload css and javascript without refreshing the page and automatically)
 
-Sung-Duk: Design
+## Running the Site
 
-Billy: Product Manager and Marketing 
-
-Yi: Design
-
-Susan: Engineering and Support
-
-## Communication Policies
-* Timeliness of Responses: Within 12 hours - (Even if you can’t perform the requested task at that specific time, reply with a message confirming you saw the request)
-
-* @channel Usage: When you want a response quickly. Don’t abuse it.
-
-* Who Should Respond: Everyone who has an input on the matter, especially when confirming when/where to meet
+To run the site all you need to do is run `gulp run-dev`. It will print out the port where it is hosted (ex. "Server running on 8080..."). If you installed the livereload plugin in Chrome you may need to click the icon in the browser bar to start it up. You can tell it is connected when the inner circle of the icon is filled in. Now you should be all set. Whenever you update a Sass, Javascript, or index.html the webpage should automatically update.
