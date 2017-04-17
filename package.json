@@ -1,0 +1,30 @@
+{
+  "name": "cue-music",
+  "version": "1.0.0",
+  "description": "Team Members: Alex Bieg, Susan Wolfgram, Billy Ding, Sung-Duk Kang, Yi Pang",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "gulp run ; node index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/cue-music/cue-music.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/cue-music/cue-music/issues"
+  },
+  "homepage": "https://github.com/cue-music/cue-music#readme",
+  "devDependencies": {
+    "browserify": "^14.3.0",
+    "gulp": "^3.9.1",
+    "gulp-concat": "^2.6.1",
+    "gulp-livereload": "^3.8.1",
+    "gulp-nodemon": "^2.2.1",
+    "gulp-sass": "^3.1.0",
+    "nodemon": "^1.11.0",
+    "vinyl-source-stream": "^1.1.0"
+  }
+}
