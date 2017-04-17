@@ -3,7 +3,6 @@ var sass = require('gulp-sass');
 var concat = require('gulp-concat');
 var browserify = require('browserify');
 var source = require('vinyl-source-stream');
-var nodemon = require('gulp-nodemon');
 var livereload = require('gulp-livereload');
 var spawn = require('child_process').spawn;
 var node;
