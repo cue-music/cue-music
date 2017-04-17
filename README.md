@@ -19,3 +19,9 @@ Here are the steps to set up the repository correctly for development:
 ## Running the Site
 
 To run the site all you need to do is run `gulp run-dev`. It will print out the port where it is hosted (ex. "Server running on 8080..."). If you installed the livereload plugin in Chrome you may need to click the icon in the browser bar to start it up. You can tell it is connected when the inner circle of the icon is filled in. Now you should be all set. Whenever you update a Sass, Javascript, or index.html the webpage should automatically update.
+
+## Adding Javascript Libraries
+
+1. Install your library with `npm install --save <library name>`
+2. Import the libary in [main.js](./javascript/main.js) with `var <libary variable> = require("<libary name>")`
+3. When the file is saved the library should be useable within it.
