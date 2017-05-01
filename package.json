@@ -18,6 +18,7 @@
   "homepage": "https://github.com/cue-music/cue-music#readme",
   "devDependencies": {
     "browserify": "^14.3.0",
+    "compass-mixins": "^0.12.10",
     "gulp": "^3.9.1",
     "gulp-concat": "^2.6.1",
     "gulp-livereload": "^3.8.1",

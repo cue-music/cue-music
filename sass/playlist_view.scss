@@ -1,0 +1,7 @@
+@import "node_modules/compass-mixins/lib/compass";
+
+body {
+	background-color: #f1e767;
+	@include filter-gradient(#f1e767, #feb645, horizontal);
+	@include background-image(linear-gradient(left top, #f1e767 0%, #feb645 100%));
+}
