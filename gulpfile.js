@@ -7,6 +7,9 @@ var livereload = require('gulp-livereload');
 var spawn = require('child_process').spawn;
 var node;
 
+/**
+* Compiles SASS into a single css file in build/css folder
+*/
 gulp.task('sass', function() {
     return gulp.src('./sass/**/*.scss')
         .pipe(sass().on('error', sass.logError))
@@ -15,11 +18,18 @@ gulp.task('sass', function() {
         .pipe(livereload());
 });
 
+/**
+* Reloads the html page for livereload
+*/
 gulp.task('html', function() {
     return gulp.src('index.html')
         .pipe(livereload());
 });
 
+/**
+* Compiles all of the node packages that "require" in the main javascript file
+* into the build/javascript folder
+*/
 gulp.task('browserify', function() {
     return browserify('./javascript/main.js')
         .bundle()
@@ -28,6 +38,10 @@ gulp.task('browserify', function() {
         .pipe(livereload());
 });
 
+/**
+* Watches all of the sass, javascript, and index.html files and calls
+* the appropriate function to complile them.
+*/
 gulp.task('watch', function() {
     livereload.listen();
     gulp.watch('./sass/**/*.scss', ['sass']);
@@ -35,6 +49,9 @@ gulp.task('watch', function() {
     gulp.watch('index.html', ['html']);
 });
 
+/**
+* Start sup a node server that hosts index.html
+*/
 gulp.task('server', function() {
   if (node) node.kill();
   node = spawn('node', ['index.js'], {stdio: 'inherit'});
@@ -45,4 +62,10 @@ gulp.task('server', function() {
   });
 });
 
+/**
+ * Runs all of the necessary tasks and starts the watch and server
+ * 
+ * Usage:
+ *      gulp run-dev
+ */
 gulp.task('run-dev', ['sass', 'browserify', 'watch', 'server']);
