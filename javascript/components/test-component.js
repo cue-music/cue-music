@@ -4,6 +4,5 @@ angular.module('app').component('testComponent', {
             name: "="
         },
         controller: function() {
-            console.log(this);
         }
     });

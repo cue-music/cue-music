@@ -5,7 +5,6 @@ angular.module('app').component('testComponent', {
             name: "="
         },
         controller: function() {
-            console.log(this);
         }
     });
 
@@ -13,17 +12,30 @@ angular.module('app').component('testComponent', {
 // External Libaries
 var angular = require('angular');
 
-// Setup angular module
-angular.module('app', [])
-    .controller("MainCtrl", function($scope) {
-        $scope.name = "Alex";
-    });
-
+var app = angular.module('app', [])
 
 // Angular Components
 require('./components/test-component.js');
+require('./services/http-service.js')
 
-},{"./components/test-component.js":1,"angular":4}],3:[function(require,module,exports){
+// Setup angular module
+app.controller("MainCtrl", ['$scope', 'httpService', function ($scope, httpService) {
+    $scope.name = "Alex";
+    httpService.testService("a", "b");
+}]);
+
+
+
+},{"./components/test-component.js":1,"./services/http-service.js":3,"angular":5}],3:[function(require,module,exports){
+angular.module("app").service('httpService', ['$http', function () {
+
+    this.testService = function (type, search) {
+        console.log(type, search);
+        return "success"
+    }
+
+}]);
+},{}],4:[function(require,module,exports){
 /**
  * @license AngularJS v1.6.4
  * (c) 2010-2017 Google, Inc. http://angularjs.org
@@ -33396,8 +33408,8 @@ $provide.value("$locale", {
 })(window);
 
 !window.angular.$$csp().noInlineStyle && window.angular.element(document.head).prepend('<style type="text/css">@charset "UTF-8";[ng\\:cloak],[ng-cloak],[data-ng-cloak],[x-ng-cloak],.ng-cloak,.x-ng-cloak,.ng-hide:not(.ng-hide-animate){display:none !important;}ng\\:form{display:block;}.ng-animate-shim{visibility:hidden;}.ng-anchor{position:absolute;}</style>');
-},{}],4:[function(require,module,exports){
+},{}],5:[function(require,module,exports){
 require('./angular');
 module.exports = angular;
 
-},{"./angular":3}]},{},[2]);
+},{"./angular":4}]},{},[2]);
