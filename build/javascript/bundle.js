@@ -1,24 +1,36 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 angular.module('app').component('testComponent', {
-        template: '<div class="test-component"><h1>Test Component! Hello {{$ctrl.name}}!</h1></div>',
+        templateUrl: './templates/testComponent.html',
+        controllerAs: 'vm',
         bindings: {
             name: "="
         },
-        controller: function() {
-        }
+        controller: "TestController"
     });
 
 },{}],2:[function(require,module,exports){
+angular.module('app').controller("TestController", [function() {
+    var vm = this
+
+    console.log(vm)
+}]);
+},{}],3:[function(require,module,exports){
 // External Libaries
 var angular = require('angular');
 
+// Setup Module
 var app = angular.module('app', [])
+
+//Angular Controllers
+require('./controllers/test-component-controller.js')
 
 // Angular Components
 require('./components/test-component.js');
+
+// Angular Services
 require('./services/http-service.js')
 
-// Setup angular module
+// Setup Main Ctrl
 app.controller("MainCtrl", ['$scope', 'httpService', function ($scope, httpService) {
     $scope.name = "Alex";
     httpService.testService("a", "b");
@@ -26,16 +38,28 @@ app.controller("MainCtrl", ['$scope', 'httpService', function ($scope, httpServi
 
 
 
-},{"./components/test-component.js":1,"./services/http-service.js":3,"angular":5}],3:[function(require,module,exports){
-angular.module("app").service('httpService', ['$http', function () {
+},{"./components/test-component.js":1,"./controllers/test-component-controller.js":2,"./services/http-service.js":4,"angular":6}],4:[function(require,module,exports){
+angular.module("app").service('httpService', ['$http', function ($http) {
 
+
+    /**
+     * Just a function to test that the service is working
+     */
     this.testService = function (type, search) {
+        $http.get("http://httpbin.org/").then(
+            function(data) {
+                console.log(data)
+            },
+            function(err) {
+                console.log(err)
+            }
+        )
         console.log(type, search);
         return "success"
     }
 
 }]);
-},{}],4:[function(require,module,exports){
+},{}],5:[function(require,module,exports){
 /**
  * @license AngularJS v1.6.4
  * (c) 2010-2017 Google, Inc. http://angularjs.org
@@ -33408,8 +33432,8 @@ $provide.value("$locale", {
 })(window);
 
 !window.angular.$$csp().noInlineStyle && window.angular.element(document.head).prepend('<style type="text/css">@charset "UTF-8";[ng\\:cloak],[ng-cloak],[data-ng-cloak],[x-ng-cloak],.ng-cloak,.x-ng-cloak,.ng-hide:not(.ng-hide-animate){display:none !important;}ng\\:form{display:block;}.ng-animate-shim{visibility:hidden;}.ng-anchor{position:absolute;}</style>');
-},{}],5:[function(require,module,exports){
+},{}],6:[function(require,module,exports){
 require('./angular');
 module.exports = angular;
 
-},{"./angular":4}]},{},[2]);
+},{"./angular":5}]},{},[3]);
