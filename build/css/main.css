@@ -1,3 +1,17 @@
+#searchbar {
+  padding-right: 0px;
+  width: 500px; }
+
+#search-input {
+  width: 100%;
+  border: none; }
+
+#form-group-custom {
+  width: 100%; }
+
+#dropdown-menu {
+  display: inline-block; }
+
 .test-component {
   background-color: blue; }
   .test-component h1 {
@@ -12,6 +26,23 @@ body {
   background-image: -moz-linear-gradient(left top, #f1e767 0%, #feb645 100%);
   background-image: -o-linear-gradient(left top, #f1e767 0%, #feb645 100%);
   background-image: linear-gradient(left top, #f1e767 0%, #feb645 100%); }
+
+#searchbar {
+  padding-right: 0px;
+  width: 500px; }
+
+#search-input {
+  width: 100%;
+  border: none; }
+
+#form-group-custom {
+  width: 100%; }
+
+#dropdown-menu {
+  display: inline-block; }
+
+body {
+  padding-top: 70px; }
 
 body {
   background-color: #f1e767;

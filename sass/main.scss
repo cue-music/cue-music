@@ -1,2 +1,7 @@
 @import "./template-styling/test-component";
 @import "playlist_view";
+@import "header";
+
+body {
+	padding-top: 70px;
+}
