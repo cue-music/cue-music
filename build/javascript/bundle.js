@@ -33,6 +33,7 @@ var config = {
   };
 
 firebase.initializeApp(config);
+console.log("main js loaded")
 
 // Setup Module
 var app = angular.module('app', ["firebase"])
@@ -50,6 +51,7 @@ require('./services/http-service.js')
 app.controller("MainCtrl", ['$scope', 'httpService', function ($scope, httpService) {
     $scope.name = "Alex";
     httpService.testService("a", "b");
+    console.log("main ctrl loaded")
 }]);
 
 
