@@ -6,3 +6,4 @@ angular.module('app').component('testComponent', {
         },
         controller: "TestController"
     });
+
