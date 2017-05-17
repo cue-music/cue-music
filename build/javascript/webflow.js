@@ -2430,5 +2430,6 @@ Webflow.require('ix').init([
   {"slug":"scalehover","name":"ScaleHover","value":{"style":{},"triggers":[{"type":"hover","stepsA":[{"opacity":1,"transition":"transform 200 ease 0, opacity 200 ease 0","scaleX":1.2,"scaleY":1.2,"scaleZ":1}],"stepsB":[{"opacity":0.3,"transition":"transform 200 ease 0, opacity 200 ease 0","scaleX":1,"scaleY":1,"scaleZ":1}]}]}},
   {"slug":"fade-in-controls","name":"Fade in Controls","value":{"style":{},"triggers":[{"type":"hover","selector":".media-control-container","stepsA":[{"wait":"200ms","display":"block"}],"stepsB":[{"wait":"200ms","display":"none"}]}]}},
   {"slug":"show-sign-up-form","name":"show sign up form","value":{"style":{},"triggers":[{"type":"click","selector":".signupform","stepsA":[{"display":"block","transition":"transform 400ms ease 0"}],"stepsB":[]},{"type":"click","selector":".signinform","stepsA":[{"display":"none"}],"stepsB":[]}]}},
-  {"slug":"new-interaction","name":"New Interaction","value":{"style":{},"triggers":[]}}
+  {"slug":"new-interaction","name":"New Interaction","value":{"style":{},"triggers":[]}},
+  {"slug":"scale","name":"scale","value":{"style":{},"triggers":[{"type":"hover","stepsA":[{"transition":"transform 200ms ease 0","scaleX":1.3,"scaleY":1.3,"scaleZ":1}],"stepsB":[{"transition":"transform 200ms ease 0","scaleX":1,"scaleY":1,"scaleZ":1}]}]}}
 ]);
