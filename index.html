@@ -23,10 +23,13 @@
   <link href="https://daks2k3a4ib2z.cloudfront.net/img/favicon.ico" rel="shortcut icon" type="image/x-icon">
   <link href="https://daks2k3a4ib2z.cloudfront.net/img/webclip.png" rel="apple-touch-icon">
 </head>
+
 <body class="body" ng-app="app" ng-controller="MainCtrl">
+  
+  <!-- Header -->
   <div class="header nav-bar w-nav" data-animation="default" data-collapse="medium" data-durati>
     <div class="w-container">
-      <a class="brand w-nav-brand" href="#"><img sizes="(max-width: 479px) 85vw, 100px" src="images/Cue-Logo.png" srcset="images/Cue-Logo-p-500.png 500w, images/Cue-Logo.png 539w" width="100">
+      <a class="brand w-nav-brand" href="#"><img sizes="(max-width: 479px) 85vw, 100px" src="images/Cue-Logo.png" srcset="images/Cue-Logo.png 500w, images/Cue-Logo.png 539w" width="100">
       </a>
       <nav class="w-nav-menu" role="navigation"><a class="nav-links w-nav-link" href="#" id="signOff">Sign Off</a><a class="nav-links w-nav-link" href="#" id="profileLink">My Profile</a>
       </nav>
@@ -35,19 +38,26 @@
       </div>
     </div>
   </div>
+
+  <!-- Search Bar and Filters -->
   <div class="search-container w-form">
-    <form>
+    <form data-name="Search Bar" id="wf-form-Search-Bar" name="wf-form-Search-Bar">
       <div class="w-row">
         <div class="w-col w-col-10">
-          <input class="w-input" data-name="search" id="search" maxlength="256" name="search" placeholder="Search" type="text">
+          <div class="search-box w-clearfix">
+            <input class="text-field w-input" data-name="search" id="search" maxlength="256" name="search" placeholder="Search artist, track, or album" type="text">
+            <input class="search-submit w-button" data-wait="Please wait..." type="submit" value="Search">
+          </div>
         </div>
         <div class="w-col w-col-2">
-          <select class="select-field w-select" data-name="search-filters" id="search-filters" name="search-filters" required="required">
-            <option value="">Select one...</option>
-            <option value="both">Both</option>
-            <option value="soundcloud">SoundCloud</option>
-            <option value="spotify">Spotify</option>
-          </select>
+          <div class="w-checkbox w-clearfix">
+            <input checked="checked" class="w-checkbox-input" data-name="soundcloud" id="soundcloud" name="soundcloud" type="checkbox">
+            <label class="search-filters w-form-label" for="soundcloud">SoundCloud</label>
+          </div>
+          <div class="checkbox-field w-checkbox w-clearfix">
+            <input class="w-checkbox-input" data-name="spotify" id="spotify" name="spotify" type="checkbox">
+            <label class="search-filters w-form-label" for="spotify">Spotify</label>
+          </div>
         </div>
       </div>
     </form>
@@ -58,6 +68,8 @@
       <div>Oops! Something went wrong while submitting the form</div>
     </div>
   </div>
+
+  <!-- Main Section -->
   <div class="main-section">
     <div class="row w-row">
       <div class="mediaplayer w-col w-col-7">
