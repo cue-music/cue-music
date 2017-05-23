@@ -15,16 +15,22 @@ var config = {
   };
 
 firebase.initializeApp(config);
-console.log("main js loaded")
+console.log("main js loaded");
 
 // Setup Module
-var app = angular.module('app', ["firebase"])
+var app = angular.module('app', ["firebase"]);
 
 //Angular Controllers
-require('./controllers/test-component-controller.js')
+require('./controllers/test-component-controller.js');
+require('./controllers/signin-component-controller.js');
+require('./controllers/player-component-controller.js');
+require('./controllers/search-component-controller.js');
 
 // Angular Components
 require('./components/test-component.js');
+require('./components/signin-component.js');
+require('./components/player-component.js');
+require('./components/search-component.js');
 
 // Angular Services
 require('./services/http-service.js')
@@ -33,7 +39,9 @@ require('./services/http-service.js')
 app.controller("MainCtrl", ['$scope', 'httpService', function ($scope, httpService) {
     $scope.name = "Alex";
     httpService.testService("a", "b");
-    console.log("main ctrl loaded")
+    console.log("main ctrl loaded");
+    // $scope.firebase = firebase;
 }]);
+
 
 
