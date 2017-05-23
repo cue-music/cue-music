@@ -15,7 +15,6 @@ var config = {
   };
 
 firebase.initializeApp(config);
-console.log("main js loaded")
 
 // Setup Module
 var app = angular.module('app', ["firebase"])
@@ -32,8 +31,13 @@ require('./services/http-service.js')
 // Setup Main Ctrl
 app.controller("MainCtrl", ['$scope', 'httpService', function ($scope, httpService) {
     $scope.name = "Alex";
-    httpService.testService("a", "b");
+    httpService.search(true, true, "love").then(
+        function(data) {
+            console.log(data)
+        },
+        function(err) {
+            console.log(err)
+        }
+    );
     console.log("main ctrl loaded")
 }]);
-
-

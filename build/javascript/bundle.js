@@ -10,10 +10,8 @@ angular.module('app').component('testComponent', {
 
 
 },{}],2:[function(require,module,exports){
-angular.module('app').controller("TestController", [function() {
+angular.module('app').controller("TestController", ["$scope", function($scope) {
     var vm = this
-
-    console.log(vm)
 }]);
 },{}],3:[function(require,module,exports){
 // External Libaries
@@ -33,7 +31,6 @@ var config = {
   };
 
 firebase.initializeApp(config);
-console.log("main js loaded")
 
 // Setup Module
 var app = angular.module('app', ["firebase"])
@@ -50,11 +47,16 @@ require('./services/http-service.js')
 // Setup Main Ctrl
 app.controller("MainCtrl", ['$scope', 'httpService', function ($scope, httpService) {
     $scope.name = "Alex";
-    httpService.testService("a", "b");
+    httpService.search(true, true, "love").then(
+        function(data) {
+            console.log(data)
+        },
+        function(err) {
+            console.log(err)
+        }
+    );
     console.log("main ctrl loaded")
 }]);
-
-
 
 },{"./components/test-component.js":1,"./controllers/test-component-controller.js":2,"./services/http-service.js":4,"angular":6,"angularfire":8,"firebase":12}],4:[function(require,module,exports){
 angular.module("app").service('httpService', ['$http', function ($http) {
@@ -83,15 +85,96 @@ angular.module("app").service('httpService', ['$http', function ($http) {
      * @return {Promise} 
      */
     this.search = function (spotify, soundcloud, searchTerm) {
-        if (spotify && soundcloud) {
-            return new Promise(function (resolve, reject) {
+        var that = this;
 
-            });
-        } else if (spotify) {
-            return this.searchSpotify(searchTerm)
-        } else {
-            return this.searchSoundcloud(searchTerm)
-        }
+        return new Promise(function (resolve, reject) {
+            spotifyDone = false;
+            soundDone = false;
+
+            songsResults = {
+                spotify: [],
+                soundcloud: []
+            };
+
+
+            // Do soundcloud stuff
+            if (soundcloud) {
+                that.searchSoundcloud(searchTerm).then(
+                    function (resp) {
+                        // It finished
+                        soundDone = true;
+
+                        // Get songs
+                        songs = resp.data;
+
+                        for (var i = 0; i < songs.length; i++) {
+                            sResult = songs[i];
+                            song = {
+                                title: sResult.title,
+                                artist: sResult.user.username,
+                                artwork: sResult.artwork_url,
+                                source: "soundcloud",
+                                length: sResult.duration,
+                                source_id: sResult.id
+                                
+                            }
+                            songsResults.soundcloud.push(song)
+                        }
+
+
+                        // Return if both are done
+                        if (spotifyDone && soundDone) {
+                            resolve(songsResults)
+                        }
+                    },
+                    function (err) {
+                        reject(err);
+                    }
+                );
+            } else {
+                soundDone = true;
+            }
+
+            // Do spotify stuff
+            if (spotify) {
+                that.searchSpotify(searchTerm).then(
+                    function (resp) {
+                        // It finished
+                        spotifyDone = true;
+
+                        // Get songs
+                        songs = resp.data.tracks.items;
+
+                        for (var i = 0; i < songs.length && i < 10; i++) {
+                            sResult = songs[i];
+                            song = {
+                                title: sResult.name,
+                                artist: sResult.artists[0].name,
+                                artwork: sResult.album.images[0].url,
+                                source: "spotify",
+                                length: sResult.duration_ms,
+                                source_id: sResult.id
+                                
+                            }
+                            songsResults.spotify.push(song)
+                        }
+
+
+                        // Return if both are done
+                        if (spotifyDone && soundDone) {
+                            resolve(songsResults)
+                        }
+                    },
+                    function (err) {
+                        reject(err);
+                    }
+                );
+            } else {
+                spotifyDone = true;
+            }
+
+
+        });
     }
 
     /**
@@ -100,9 +183,8 @@ angular.module("app").service('httpService', ['$http', function ($http) {
      * @return {Promise}
      */
     this.searchSpotify = function (searchTerm) {
-        return new Promise(function (resolve, reject) {
-            // TODO: search spotify
-        });
+        var apiUrl = "https://api.spotify.com/v1/search?type=track&q=" + searchTerm;
+        return $http.get(apiUrl);
     }
 
     /**
@@ -111,9 +193,9 @@ angular.module("app").service('httpService', ['$http', function ($http) {
      * @return {Promise}
      */
     this.searchSoundcloud = function (searchTerm) {
-        return new Promise(function (resolve, reject) {
-            // TODO: search sound cloud
-        });
+        // KEY = 9cfb13e8afddd6b2ffcf8902b1dfe087
+        var apiUrl = "http://api.soundcloud.com/tracks?client_id=9cfb13e8afddd6b2ffcf8902b1dfe087&q=" + searchTerm
+        return $http.get(apiUrl);
     }
 }]);
 },{}],5:[function(require,module,exports){
