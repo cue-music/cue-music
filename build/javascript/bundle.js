@@ -11,9 +11,6 @@ angular.module('app').component('playerComponent', {
 angular.module('app').component('searchComponent', {
         templateUrl: './templates/searchComponent.html',
         controllerAs: 'vm',
-        bindings: {
-            name: "="
-        },
         controller: "SearchController"
     });
 },{}],3:[function(require,module,exports){
@@ -44,9 +41,28 @@ angular.module('app').controller("PlayerController", [function () {
 }]);
 },{"firebase":18}],6:[function(require,module,exports){
 var firebase = require("firebase");
-angular.module('app').controller("SearchController", [function () {
+angular.module('app').controller("SearchController", ['httpService', function (httpService) {
     var vm = this
-    
+
+    // Set up checkboxes
+    vm.searchSoundcloud = true;
+    vm.searchSpotify = true;
+
+
+    vm.search = function () {
+        if (!vm.searchSoundcloud && !vm.searchSpotify) {
+            alert("Please select at least one service to search.");
+        } else {
+            httpService.search(vm.searchSpotify, vm.searchSoundcloud, vm.searchTerm).then(
+                function(songs) {
+                    console.log(songs);
+                },
+                function(err) {
+                    console.log(err);
+                }
+            )
+        }
+    }
 }]);
 },{"firebase":18}],7:[function(require,module,exports){
 var firebase = require("firebase");
@@ -125,16 +141,7 @@ require('./services/http-service.js')
 
 // Setup Main Ctrl
 app.controller("MainCtrl", ['$scope', 'httpService', function ($scope, httpService) {
-    $scope.name = "Alex";
-    httpService.search(true, true, "love").then(
-        function(data) {
-            console.log(data)
-        },
-        function(err) {
-            console.log(err)
-        }
-    );
-    console.log("main ctrl loaded")
+
 }]);
 
 },{"./components/player-component.js":1,"./components/search-component.js":2,"./components/signin-component.js":3,"./components/test-component.js":4,"./controllers/player-component-controller.js":5,"./controllers/search-component-controller.js":6,"./controllers/signin-component-controller.js":7,"./controllers/test-component-controller.js":8,"./services/http-service.js":10,"angular":12,"angularfire":14,"firebase":18}],10:[function(require,module,exports){
