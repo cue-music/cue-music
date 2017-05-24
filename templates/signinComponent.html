@@ -1,0 +1,50 @@
+<div class="container w-container"><img class="loginlogo" sizes="(max-width: 479px) 100vw, 269.5px" src="images/Cue-Logo.png" srcset="images/Cue-Logo.png 500w, images/Cue-Logo.png 539w" width="269.5">
+  </div>
+  <div>
+    <div class="row-2 w-row">
+      <div class="w-col w-col-3"></div>
+      <div class="w-col w-col-6">
+        <div>
+          <div class="signinform w-form" id="signInForm" ng-show="!vm.showSignup">
+            <form class="w-clearfix" data-name="Email-Form" id="email-form" name="email-form" ng-submit="vm.signin()" novalidate>
+              <label class="field-label-2" for="name"><span class="text-span">Email</span>:</label>
+              <input class="roundedinput w-input" maxlength="256" placeholder="Enter your email"
+                type="email" ng-model="vm.signinEmail">
+              <label class="field-label" for="email">Password:</label>
+              <input class="roundedinput w-input" data-name="Email" id="email" maxlength="256" placeholder="Enter your password"
+                required="required" type="password" ng-model="vm.signinPwd">
+              <input class="roundedb w-button" value="Sign Up" ng-click="vm.showSignup = true;">
+              <input class="submit-button w-button" data-wait="Please wait..." type="submit" value="Sign In">
+            </form>
+            <div class="w-form-done">
+              <div>Thank you! Your submission has been received!</div>
+            </div>
+            <div class="w-form-fail">
+              <div>Oops! Something went wrong while submitting the form</div>
+            </div>
+          </div>
+          <div class="signupform w-form" id="signUpForm" ng-show="vm.showSignup" style="display: initial;">
+            <form class="w-clearfix" data-name="Email-Form-2" id="email-form-2" name="email-form-2" ng-submit="vm.signup()" novalidate>
+              <label class="text-span" for="name-2">Email:</label>
+              <input class="roundedinput w-input" data-name="Name-2" id="name-2" maxlength="256" placeholder="Enter your email"
+                required="required" type="email" ng-model="vm.signupEmail">
+              <label class="text-span" for="email-2">Password</label>
+              <input class="roundedinput w-input" data-name="Email-2" id="email-2" maxlength="256" placeholder="Enter your password"
+                required="required" type="password" ng-model="vm.signupPwd">
+              <label class="text-span" for="email-2">Comfirm Password</label>
+              <input class="roundedinput w-input" data-name="Email-2" id="email-2" maxlength="256" placeholder="Enter your password again"
+                required="required" type="password" ng-model="vm.signupPwd2">
+              <input class="submit-button w-button" data-wait="Please wait..." type="submit" value="Submit">
+            </form>
+            <div class="w-form-done">
+              <div>Thank you! Your submission has been received!</div>
+            </div>
+            <div class="w-form-fail">
+              <div>Oops! Something went wrong while submitting the form</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="w-col w-col-3"></div>
+    </div>
+  </div>
