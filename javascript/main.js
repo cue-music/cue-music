@@ -37,13 +37,5 @@ require('./services/http-service.js')
 // Setup Main Ctrl
 app.controller("MainCtrl", ['$scope', 'httpService', function ($scope, httpService) {
     $scope.name = "Alex";
-    httpService.search(true, true, "love").then(
-        function(data) {
-            console.log(data)
-        },
-        function(err) {
-            console.log(err)
-        }
-    );
     console.log("main ctrl loaded")
 }]);

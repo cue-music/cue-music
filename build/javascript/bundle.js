@@ -44,9 +44,24 @@ angular.module('app').controller("PlayerController", [function () {
 }]);
 },{"firebase":18}],6:[function(require,module,exports){
 var firebase = require("firebase");
-angular.module('app').controller("SearchController", [function () {
+angular.module('app').controller("SearchController", ["httpService", function (httpService) {
     var vm = this
-    
+
+    vm.spotify = true
+    vm.sound = true
+
+    vm.search = function(spot, sound, term) {
+        httpService.search(spot, sound, term).then(
+            function(data){ 
+                console.log(data);
+            },
+            function(err) {
+                console.log(err)
+            }
+        )
+    }    
+
+
 }]);
 },{"firebase":18}],7:[function(require,module,exports){
 var firebase = require("firebase");
@@ -83,8 +98,7 @@ angular.module('app').controller("SigninController", [function () {
     }
 }]);
 },{"firebase":18}],8:[function(require,module,exports){
-angular.module('app').controller("TestController", [function() {
->>>>>>> master
+angular.module('app').controller("TestController", ["$scope", function($scope) {
     var vm = this
 }]);
 },{}],9:[function(require,module,exports){
@@ -105,10 +119,6 @@ var config = {
   };
 
 firebase.initializeApp(config);
-<<<<<<< HEAD
-=======
-console.log("main js loaded");
->>>>>>> master
 
 // Setup Module
 var app = angular.module('app', ["firebase"]);
@@ -131,30 +141,10 @@ require('./services/http-service.js')
 // Setup Main Ctrl
 app.controller("MainCtrl", ['$scope', 'httpService', function ($scope, httpService) {
     $scope.name = "Alex";
-<<<<<<< HEAD
-    httpService.search(true, true, "love").then(
-        function(data) {
-            console.log(data)
-        },
-        function(err) {
-            console.log(err)
-        }
-    );
     console.log("main ctrl loaded")
 }]);
 
-},{"./components/test-component.js":1,"./controllers/test-component-controller.js":2,"./services/http-service.js":4,"angular":6,"angularfire":8,"firebase":12}],4:[function(require,module,exports){
-=======
-    httpService.testService("a", "b");
-    console.log("main ctrl loaded");
-    // $scope.firebase = firebase;
-}]);
-
-
-
-
 },{"./components/player-component.js":1,"./components/search-component.js":2,"./components/signin-component.js":3,"./components/test-component.js":4,"./controllers/player-component-controller.js":5,"./controllers/search-component-controller.js":6,"./controllers/signin-component-controller.js":7,"./controllers/test-component-controller.js":8,"./services/http-service.js":10,"angular":12,"angularfire":14,"firebase":18}],10:[function(require,module,exports){
->>>>>>> master
 angular.module("app").service('httpService', ['$http', function ($http) {
 
     /**
