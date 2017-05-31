@@ -1,21 +1,21 @@
 <!-- Search Bar and Filters -->
   <div class="search-container w-form">
-    <form data-name="Search-Bar" id="wf-form-Search-Bar" name="wf-form-Search-Bar">
+    <form data-name="Search-Bar" id="wf-form-Search-Bar" name="wf-form-Search-Bar" ng-submit="vm.search()">
       <div class="w-row">
         <div class="w-col w-col-10">
           <div class="search-box w-clearfix">
             <input class="text-field w-input" data-name="search" id="search" maxlength="256" name="search" placeholder="Search artist, track, or album"
-              type="text" ng-model="vm.searchTerm">
-            <input class="search-submit w-button" data-wait="Please wait..." type="submit" value="Search" ng-click="vm.search()">
+              type="text" ng-model="vm.term">
+            <input class="search-submit w-button" data-wait="Please wait..." type="submit" value="Search">
           </div>
         </div>
         <div class="w-col w-col-2">
           <div class="w-checkbox w-clearfix">
-            <input checked class="w-checkbox-input" data-name="soundcloud" id="soundcloud" name="soundcloud" type="checkbox" ng-model="vm.searchSoundcloud">
+            <input ng-model="vm.searchSoundcloud" checked="checked" class="w-checkbox-input" data-name="soundcloud" id="soundcloud" name="soundcloud" type="checkbox">
             <label class="search-filters w-form-label" for="soundcloud">SoundCloud</label>
           </div>
           <div class="checkbox-field w-checkbox w-clearfix">
-            <input class="w-checkbox-input" data-name="spotify" id="spotify" name="spotify" type="checkbox" ng-model="vm.searchSpotify">
+            <input ng-model="vm.searchSpotify" class="w-checkbox-input" data-name="spotify" id="spotify" name="spotify" type="checkbox">
             <label class="search-filters w-form-label" for="spotify">Spotify</label>
           </div>
         </div>

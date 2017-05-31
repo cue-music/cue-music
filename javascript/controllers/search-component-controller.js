@@ -1,6 +1,6 @@
 var firebase = require("firebase");
 angular.module('app').controller("SearchController", ['httpService', function (httpService) {
-    var vm = this
+    var vm = this;
 
     // Set up checkboxes
     vm.searchSoundcloud = true;

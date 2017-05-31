@@ -42,7 +42,7 @@ angular.module('app').controller("PlayerController", [function () {
 },{"firebase":18}],6:[function(require,module,exports){
 var firebase = require("firebase");
 angular.module('app').controller("SearchController", ['httpService', function (httpService) {
-    var vm = this
+    var vm = this;
 
     // Set up checkboxes
     vm.searchSoundcloud = true;
@@ -141,7 +141,6 @@ require('./services/http-service.js')
 
 // Setup Main Ctrl
 app.controller("MainCtrl", ['$scope', 'httpService', function ($scope, httpService) {
-
 }]);
 
 },{"./components/player-component.js":1,"./components/search-component.js":2,"./components/signin-component.js":3,"./components/test-component.js":4,"./controllers/player-component-controller.js":5,"./controllers/search-component-controller.js":6,"./controllers/signin-component-controller.js":7,"./controllers/test-component-controller.js":8,"./services/http-service.js":10,"angular":12,"angularfire":14,"firebase":18}],10:[function(require,module,exports){

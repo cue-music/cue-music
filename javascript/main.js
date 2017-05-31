@@ -36,5 +36,4 @@ require('./services/http-service.js')
 
 // Setup Main Ctrl
 app.controller("MainCtrl", ['$scope', 'httpService', function ($scope, httpService) {
-
 }]);
