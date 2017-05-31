@@ -16,7 +16,6 @@ var config = {
   };
 
 firebase.initializeApp(config);
-console.log("main js loaded");
 
 // Setup Module
 var app = angular.module('app', ["firebase", "spotify"]);
@@ -49,6 +48,7 @@ require('./services/http-service.js')
 // Setup Main Ctrl
 app.controller("MainCtrl", ['$scope','$rootScope', 'httpService', function ($scope, $rootScope, httpService) {
     $scope.name = "Alex";
+<<<<<<< HEAD
     $rootScope.loggedIn = false;
     $rootScope.userProfile = false;
     httpService.testService("a", "b");
@@ -63,7 +63,7 @@ app.controller("MainCtrl", ['$scope','$rootScope', 'httpService', function ($sco
           console.log(error);
 		});
     }
+=======
+    console.log("main ctrl loaded")
+>>>>>>> f14a9741d1c9ee908958a8e5a186fd81cc45f7ad
 }]);
-
-
-

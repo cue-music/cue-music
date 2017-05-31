@@ -1,3 +1,14 @@
+.borderBottom{
+  border-bottom: solid white 1px;
+}
+
+#profileBody {
+  width: 80%;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* Webflow Generated CSS */
 a {
   text-decoration: underline;
 }
@@ -517,7 +528,7 @@ a {
 }
 
 .search-results {
-  display: none;
+  display: block;
   -webkit-box-orient: vertical;
   -webkit-box-direction: normal;
   -webkit-flex-direction: column;
@@ -629,7 +640,7 @@ a {
   background-color: #fff;
 }
 
-.image-2 {
+.backtoplayer {
   margin-top: 10px;
   margin-left: 10px;
   padding-left: 0px;

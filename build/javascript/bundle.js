@@ -63,9 +63,24 @@ angular.module('app').controller("PlayerController", [function () {
 }]);
 },{"firebase":23}],8:[function(require,module,exports){
 var firebase = require("firebase");
-angular.module('app').controller("SearchController", [function () {
+angular.module('app').controller("SearchController", ["httpService", function (httpService) {
     var vm = this
-    
+
+    vm.spotify = true
+    vm.sound = true
+
+    vm.search = function(spot, sound, term) {
+        httpService.search(spot, sound, term).then(
+            function(data){ 
+                console.log(data);
+            },
+            function(err) {
+                console.log(err)
+            }
+        )
+    }    
+
+
 }]);
 },{"firebase":23}],9:[function(require,module,exports){
 var firebase = require("firebase");
@@ -128,6 +143,7 @@ angular.module('app').controller("SigninController", ["$scope", "$rootScope", "S
     }
 
 }]);
+<<<<<<< HEAD
 },{"firebase":23}],10:[function(require,module,exports){
 var firebase = require("firebase");
 angular.module('app').controller("SmallplayerController", [function () {
@@ -136,9 +152,11 @@ angular.module('app').controller("SmallplayerController", [function () {
 }]);
 },{"firebase":23}],11:[function(require,module,exports){
 angular.module('app').controller("TestController", [function() {
+=======
+},{"firebase":18}],8:[function(require,module,exports){
+angular.module('app').controller("TestController", ["$scope", function($scope) {
+>>>>>>> f14a9741d1c9ee908958a8e5a186fd81cc45f7ad
     var vm = this
-
-    console.log(vm)
 }]);
 },{}],12:[function(require,module,exports){
 var firebase = require("firebase");
@@ -172,7 +190,6 @@ var config = {
   };
 
 firebase.initializeApp(config);
-console.log("main js loaded");
 
 // Setup Module
 var app = angular.module('app', ["firebase", "spotify"]);
@@ -205,6 +222,7 @@ require('./services/http-service.js')
 // Setup Main Ctrl
 app.controller("MainCtrl", ['$scope','$rootScope', 'httpService', function ($scope, $rootScope, httpService) {
     $scope.name = "Alex";
+<<<<<<< HEAD
     $rootScope.loggedIn = false;
     $rootScope.userProfile = false;
     httpService.testService("a", "b");
@@ -225,6 +243,12 @@ app.controller("MainCtrl", ['$scope','$rootScope', 'httpService', function ($sco
 
 
 },{"./components/player-component.js":1,"./components/search-component.js":2,"./components/signin-component.js":3,"./components/smallplayer-component.js":4,"./components/test-component.js":5,"./components/userprofile-component.js":6,"./controllers/player-component-controller.js":7,"./controllers/search-component-controller.js":8,"./controllers/signin-component-controller.js":9,"./controllers/smallplayer-component-controller.js":10,"./controllers/test-component-controller.js":11,"./controllers/userprofile-component-controller.js":12,"./services/http-service.js":14,"angular":17,"angular-spotify":15,"angularfire":19,"firebase":23}],14:[function(require,module,exports){
+=======
+    console.log("main ctrl loaded")
+}]);
+
+},{"./components/player-component.js":1,"./components/search-component.js":2,"./components/signin-component.js":3,"./components/test-component.js":4,"./controllers/player-component-controller.js":5,"./controllers/search-component-controller.js":6,"./controllers/signin-component-controller.js":7,"./controllers/test-component-controller.js":8,"./services/http-service.js":10,"angular":12,"angularfire":14,"firebase":18}],10:[function(require,module,exports){
+>>>>>>> f14a9741d1c9ee908958a8e5a186fd81cc45f7ad
 angular.module("app").service('httpService', ['$http', function ($http) {
 
     /**
@@ -232,10 +256,10 @@ angular.module("app").service('httpService', ['$http', function ($http) {
      */
     this.testService = function (type, search) {
         $http.get("http://httpbin.org/").then(
-            function(data) {
+            function (data) {
                 console.log(data)
             },
-            function(err) {
+            function (err) {
                 console.log(err)
             }
         )
@@ -243,6 +267,126 @@ angular.module("app").service('httpService', ['$http', function ($http) {
         return "success"
     }
 
+    /**
+     * Returns search results
+     * @param {boolean} spotify - Should spotify be searched
+     * @param {boolean} soundcloud - Should SoundCloud be searched
+     * @param {string} searchTerm - the term to search on the services
+     * @return {Promise} 
+     */
+    this.search = function (spotify, soundcloud, searchTerm) {
+        var that = this;
+
+        return new Promise(function (resolve, reject) {
+            spotifyDone = false;
+            soundDone = false;
+
+            songsResults = {
+                spotify: [],
+                soundcloud: []
+            };
+
+
+            // Do soundcloud stuff
+            if (soundcloud) {
+                that.searchSoundcloud(searchTerm).then(
+                    function (resp) {
+                        // It finished
+                        soundDone = true;
+
+                        // Get songs
+                        songs = resp.data;
+
+                        for (var i = 0; i < songs.length; i++) {
+                            sResult = songs[i];
+                            song = {
+                                title: sResult.title,
+                                artist: sResult.user.username,
+                                artwork: sResult.artwork_url,
+                                source: "soundcloud",
+                                length: sResult.duration,
+                                source_id: sResult.id
+                                
+                            }
+                            songsResults.soundcloud.push(song)
+                        }
+
+
+                        // Return if both are done
+                        if (spotifyDone && soundDone) {
+                            resolve(songsResults)
+                        }
+                    },
+                    function (err) {
+                        reject(err);
+                    }
+                );
+            } else {
+                soundDone = true;
+            }
+
+            // Do spotify stuff
+            if (spotify) {
+                that.searchSpotify(searchTerm).then(
+                    function (resp) {
+                        // It finished
+                        spotifyDone = true;
+
+                        // Get songs
+                        songs = resp.data.tracks.items;
+
+                        for (var i = 0; i < songs.length && i < 10; i++) {
+                            sResult = songs[i];
+                            song = {
+                                title: sResult.name,
+                                artist: sResult.artists[0].name,
+                                artwork: sResult.album.images[0].url,
+                                source: "spotify",
+                                length: sResult.duration_ms,
+                                source_id: sResult.id
+                                
+                            }
+                            songsResults.spotify.push(song)
+                        }
+
+
+                        // Return if both are done
+                        if (spotifyDone && soundDone) {
+                            resolve(songsResults)
+                        }
+                    },
+                    function (err) {
+                        reject(err);
+                    }
+                );
+            } else {
+                spotifyDone = true;
+            }
+
+
+        });
+    }
+
+    /**
+     * Searches spotify
+     * @param {string} searchTerm - the term to search on the services
+     * @return {Promise}
+     */
+    this.searchSpotify = function (searchTerm) {
+        var apiUrl = "https://api.spotify.com/v1/search?type=track&q=" + searchTerm;
+        return $http.get(apiUrl);
+    }
+
+    /**
+     * Searches spotify
+     * @param {string} searchTerm - the term to search on the services
+     * @return {Promise}
+     */
+    this.searchSoundcloud = function (searchTerm) {
+        // KEY = 9cfb13e8afddd6b2ffcf8902b1dfe087
+        var apiUrl = "http://api.soundcloud.com/tracks?client_id=9cfb13e8afddd6b2ffcf8902b1dfe087&q=" + searchTerm
+        return $http.get(apiUrl);
+    }
 }]);
 },{}],15:[function(require,module,exports){
 (function (window, angular, undefined) {
