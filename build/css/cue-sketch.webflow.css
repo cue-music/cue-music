@@ -8,6 +8,53 @@
   margin-right: auto;
 }
 
+.createNewPlaylist {
+  position: absolute;
+  left: 0px;
+  top: 140px;
+  right: 0px;
+  z-index: auto;
+  display: block;
+  width: 40%;
+  height: 30%;
+  margin-right: auto;
+  margin-left: auto;
+  background-color: black;
+  padding: 10px;
+  color: white;
+}
+
+.newPlaylistButton {
+  padding-left: 15px;
+  padding-right: 15px;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  margin-right: 5px;
+  float: right;
+  border-radius: 5px;
+  background: #3898EC;
+}
+
+#newPlaylistCancel {
+  /*background: blue;*/
+}
+
+#playlistNameInput {
+  box-sizing: border-box;
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  outline: none;
+  display: block;
+  width: 100%;
+  padding: 7px;
+  border: none;
+  border-bottom: 1px solid #ddd;
+  background: transparent;
+  margin-bottom: 10px;
+  font: 16px Arial, Helvetica, sans-serif;
+  height: 45px;
+}
+
 /* Webflow Generated CSS */
 a {
   text-decoration: underline;
