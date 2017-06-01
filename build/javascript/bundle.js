@@ -65,14 +65,14 @@ angular.module('app').controller("SearchController", ['httpService', function (h
 
     // Set up checkboxes
     vm.searchSoundcloud = true;
-    vm.searchSpotify = true;
+    vm.searchYoutube = true;
 
 
     vm.search = function () {
-        if (!vm.searchSoundcloud && !vm.searchSpotify) {
+        if (!vm.searchSoundcloud && !vm.searchYoutube) {
             alert("Please select at least one service to search.");
         } else {
-            httpService.search(vm.searchSpotify, vm.searchSoundcloud, vm.searchTerm).then(
+            httpService.search(vm.searchYoutube, vm.searchSoundcloud, vm.searchTerm).then(
                 function(songs) {
                     console.log(songs);
                 },
@@ -177,29 +177,26 @@ var spotify = require('angular-spotify');
 
 // Set up firebase
 var config = {
-    apiKey: "AIzaSyBrPwQw4Gxa1StVB7-jIHMKn0YDSBhrfQs",
-    authDomain: "cue-music.firebaseapp.com",
-    databaseURL: "https://cue-music.firebaseio.com",
-    projectId: "cue-music",
-    storageBucket: "cue-music.appspot.com",
-    messagingSenderId: "31703604556"
-  };
+  apiKey: "AIzaSyBrPwQw4Gxa1StVB7-jIHMKn0YDSBhrfQs",
+  authDomain: "cue-music.firebaseapp.com",
+  databaseURL: "https://cue-music.firebaseio.com",
+  projectId: "cue-music",
+  storageBucket: "cue-music.appspot.com",
+  messagingSenderId: "31703604556"
+};
 
 firebase.initializeApp(config);
 
 
-// Set up soundcloud
-SC.initialize({
-  client_id: '9cfb13e8afddd6b2ffcf8902b1dfe087&q=',
-  redirect_uri: window.location.href
-});
 
 
-SC.connect().then(function() {
-  return SC.get('/me');
-}).then(function(me) {
-  alert('Hello, ' + me.username);
-});
+
+
+// SC.connect().then(function() {
+//   return SC.get('/me');
+// }).then(function(me) {
+//   alert('Hello, ' + me.username);
+// });
 
 // // stream track id 293
 // SC.stream('/tracks/293').then(function(player){
@@ -210,9 +207,9 @@ SC.connect().then(function() {
 var app = angular.module('app', ["firebase", "spotify"]);
 
 app.config(function (SpotifyProvider) {
-	SpotifyProvider.setClientId('f85ef2aa60924edbae2c811df6e5625c');
-	SpotifyProvider.setRedirectUri('http://localhost:8080/callback.html');
-	SpotifyProvider.setScope('user-read-private playlist-read-private playlist-modify-private playlist-modify-public');
+  SpotifyProvider.setClientId('f85ef2aa60924edbae2c811df6e5625c');
+  SpotifyProvider.setRedirectUri('http://localhost:8080/callback.html');
+  SpotifyProvider.setScope('user-read-private playlist-read-private playlist-modify-private playlist-modify-public');
 });
 
 //Angular Controllers
@@ -235,59 +232,54 @@ require('./components/smallplayer-component.js');
 require('./services/http-service.js')
 
 // Setup Main Ctrl
-app.controller("MainCtrl", ['$scope','$rootScope', 'httpService', function ($scope, $rootScope, httpService) {
-    $scope.name = "Alex";
-    $rootScope.loggedIn = false;
-    $rootScope.userProfile = false;
-    httpService.testService("a", "b");
-    console.log("main ctrl loaded");
-    $scope.logOut = function() {
-        firebase.auth().signOut().then(function() {
-			console.log("log out");
-		  	$rootScope.loggedIn = false; 
-			$scope.$digest();
-		}).catch(function(error) {
-		  // An error happened.
-          console.log(error);
-		});
-    }
+app.controller("MainCtrl", ['$scope', '$rootScope', 'httpService', function ($scope, $rootScope, httpService) {
+  $scope.name = "Alex";
+  $rootScope.loggedIn = false;
+  $rootScope.userProfile = false;
+
+  console.log("main ctrl loaded");
+  $scope.logOut = function () {
+    firebase.auth().signOut().then(function () {
+      console.log("log out");
+      $rootScope.loggedIn = false;
+      $scope.$digest();
+    }).catch(function (error) {
+      // An error happened.
+      console.log(error);
+    });
+  }
+
+
+  $scope.playVideo = function () {
+    console.log("playing video")
+    player.playVideo();
+  }
+
+  $scope.pauseVideo = function() {
+    player.pauseVideo();
+  }
 }]);
 
 },{"./components/player-component.js":1,"./components/search-component.js":2,"./components/signin-component.js":3,"./components/smallplayer-component.js":4,"./components/test-component.js":5,"./components/userprofile-component.js":6,"./controllers/player-component-controller.js":7,"./controllers/search-component-controller.js":8,"./controllers/signin-component-controller.js":9,"./controllers/smallplayer-component-controller.js":10,"./controllers/test-component-controller.js":11,"./controllers/userprofile-component-controller.js":12,"./services/http-service.js":14,"angular":17,"angular-spotify":15,"angularfire":19,"firebase":23}],14:[function(require,module,exports){
 angular.module("app").service('httpService', ['$http', function ($http) {
 
-    /**
-     * Just a function to test that the service is working
-     */
-    this.testService = function (type, search) {
-        $http.get("http://httpbin.org/").then(
-            function (data) {
-                console.log(data)
-            },
-            function (err) {
-                console.log(err)
-            }
-        )
-        console.log(type, search);
-        return "success"
-    }
 
     /**
      * Returns search results
-     * @param {boolean} spotify - Should spotify be searched
+     * @param {boolean} youtube - Should youtube be searched
      * @param {boolean} soundcloud - Should SoundCloud be searched
      * @param {string} searchTerm - the term to search on the services
      * @return {Promise} 
      */
-    this.search = function (spotify, soundcloud, searchTerm) {
+    this.search = function (youtube, soundcloud, searchTerm) {
         var that = this;
 
         return new Promise(function (resolve, reject) {
-            spotifyDone = false;
+            youtubeDone = false;
             soundDone = false;
 
             songsResults = {
-                spotify: [],
+                youtube: [],
                 soundcloud: []
             };
 
@@ -318,7 +310,7 @@ angular.module("app").service('httpService', ['$http', function ($http) {
 
 
                         // Return if both are done
-                        if (spotifyDone && soundDone) {
+                        if (youtubeDone && soundDone) {
                             resolve(songsResults)
                         }
                     },
@@ -330,33 +322,33 @@ angular.module("app").service('httpService', ['$http', function ($http) {
                 soundDone = true;
             }
 
-            // Do spotify stuff
-            if (spotify) {
-                that.searchSpotify(searchTerm).then(
+            // Do youtube stuff
+            if (youtube) {
+                that.searchYoutube(searchTerm).then(
                     function (resp) {
                         // It finished
-                        spotifyDone = true;
+                        youtubeDone = true;
 
                         // Get songs
-                        songs = resp.data.tracks.items;
+                        songs = resp.data.items;
 
                         for (var i = 0; i < songs.length && i < 10; i++) {
                             sResult = songs[i];
                             song = {
-                                title: sResult.name,
-                                artist: sResult.artists[0].name,
-                                artwork: sResult.album.images[0].url,
-                                source: "spotify",
-                                length: sResult.duration_ms,
-                                source_id: sResult.id
+                                title: sResult.snippet.title,
+                                artist: sResult.snippet.channelTitle,
+                                artwork: sResult.snippet.thumbnails.default.url,
+                                source: "youtube",
+                                length: null,
+                                source_id: sResult.id.videoId
                                 
                             }
-                            songsResults.spotify.push(song)
+                            songsResults.youtube.push(song)
                         }
 
 
                         // Return if both are done
-                        if (spotifyDone && soundDone) {
+                        if (youtubeDone && soundDone) {
                             resolve(songsResults)
                         }
                     },
@@ -365,7 +357,7 @@ angular.module("app").service('httpService', ['$http', function ($http) {
                     }
                 );
             } else {
-                spotifyDone = true;
+                youtubeDone = true;
             }
 
 
@@ -377,8 +369,8 @@ angular.module("app").service('httpService', ['$http', function ($http) {
      * @param {string} searchTerm - the term to search on the services
      * @return {Promise}
      */
-    this.searchSpotify = function (searchTerm) {
-        var apiUrl = "https://api.spotify.com/v1/search?type=track&q=" + searchTerm;
+    this.searchYoutube = function (searchTerm) {
+        var apiUrl = "https://www.googleapis.com/youtube/v3/search?part=snippet&type=video&videoCategoryId=10&maxResults=10&key=AIzaSyBrPwQw4Gxa1StVB7-jIHMKn0YDSBhrfQs&q=" + searchTerm;
         return $http.get(apiUrl);
     }
 

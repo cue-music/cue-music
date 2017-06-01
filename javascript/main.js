@@ -7,29 +7,26 @@ var spotify = require('angular-spotify');
 
 // Set up firebase
 var config = {
-    apiKey: "AIzaSyBrPwQw4Gxa1StVB7-jIHMKn0YDSBhrfQs",
-    authDomain: "cue-music.firebaseapp.com",
-    databaseURL: "https://cue-music.firebaseio.com",
-    projectId: "cue-music",
-    storageBucket: "cue-music.appspot.com",
-    messagingSenderId: "31703604556"
-  };
+  apiKey: "AIzaSyBrPwQw4Gxa1StVB7-jIHMKn0YDSBhrfQs",
+  authDomain: "cue-music.firebaseapp.com",
+  databaseURL: "https://cue-music.firebaseio.com",
+  projectId: "cue-music",
+  storageBucket: "cue-music.appspot.com",
+  messagingSenderId: "31703604556"
+};
 
 firebase.initializeApp(config);
 
 
-// Set up soundcloud
-SC.initialize({
-  client_id: '9cfb13e8afddd6b2ffcf8902b1dfe087&q=',
-  redirect_uri: window.location.href
-});
 
 
-SC.connect().then(function() {
-  return SC.get('/me');
-}).then(function(me) {
-  alert('Hello, ' + me.username);
-});
+
+
+// SC.connect().then(function() {
+//   return SC.get('/me');
+// }).then(function(me) {
+//   alert('Hello, ' + me.username);
+// });
 
 // // stream track id 293
 // SC.stream('/tracks/293').then(function(player){
@@ -40,9 +37,9 @@ SC.connect().then(function() {
 var app = angular.module('app', ["firebase", "spotify"]);
 
 app.config(function (SpotifyProvider) {
-	SpotifyProvider.setClientId('f85ef2aa60924edbae2c811df6e5625c');
-	SpotifyProvider.setRedirectUri('http://localhost:8080/callback.html');
-	SpotifyProvider.setScope('user-read-private playlist-read-private playlist-modify-private playlist-modify-public');
+  SpotifyProvider.setClientId('f85ef2aa60924edbae2c811df6e5625c');
+  SpotifyProvider.setRedirectUri('http://localhost:8080/callback.html');
+  SpotifyProvider.setScope('user-read-private playlist-read-private playlist-modify-private playlist-modify-public');
 });
 
 //Angular Controllers
@@ -65,20 +62,30 @@ require('./components/smallplayer-component.js');
 require('./services/http-service.js')
 
 // Setup Main Ctrl
-app.controller("MainCtrl", ['$scope','$rootScope', 'httpService', function ($scope, $rootScope, httpService) {
-    $scope.name = "Alex";
-    $rootScope.loggedIn = false;
-    $rootScope.userProfile = false;
-    httpService.testService("a", "b");
-    console.log("main ctrl loaded");
-    $scope.logOut = function() {
-        firebase.auth().signOut().then(function() {
-			console.log("log out");
-		  	$rootScope.loggedIn = false; 
-			$scope.$digest();
-		}).catch(function(error) {
-		  // An error happened.
-          console.log(error);
-		});
-    }
+app.controller("MainCtrl", ['$scope', '$rootScope', 'httpService', function ($scope, $rootScope, httpService) {
+  $scope.name = "Alex";
+  $rootScope.loggedIn = false;
+  $rootScope.userProfile = false;
+
+  console.log("main ctrl loaded");
+  $scope.logOut = function () {
+    firebase.auth().signOut().then(function () {
+      console.log("log out");
+      $rootScope.loggedIn = false;
+      $scope.$digest();
+    }).catch(function (error) {
+      // An error happened.
+      console.log(error);
+    });
+  }
+
+
+  $scope.playVideo = function () {
+    console.log("playing video")
+    player.playVideo();
+  }
+
+  $scope.pauseVideo = function() {
+    player.pauseVideo();
+  }
 }]);

@@ -1,37 +1,22 @@
 angular.module("app").service('httpService', ['$http', function ($http) {
 
-    /**
-     * Just a function to test that the service is working
-     */
-    this.testService = function (type, search) {
-        $http.get("http://httpbin.org/").then(
-            function (data) {
-                console.log(data)
-            },
-            function (err) {
-                console.log(err)
-            }
-        )
-        console.log(type, search);
-        return "success"
-    }
 
     /**
      * Returns search results
-     * @param {boolean} spotify - Should spotify be searched
+     * @param {boolean} youtube - Should youtube be searched
      * @param {boolean} soundcloud - Should SoundCloud be searched
      * @param {string} searchTerm - the term to search on the services
      * @return {Promise} 
      */
-    this.search = function (spotify, soundcloud, searchTerm) {
+    this.search = function (youtube, soundcloud, searchTerm) {
         var that = this;
 
         return new Promise(function (resolve, reject) {
-            spotifyDone = false;
+            youtubeDone = false;
             soundDone = false;
 
             songsResults = {
-                spotify: [],
+                youtube: [],
                 soundcloud: []
             };
 
@@ -62,7 +47,7 @@ angular.module("app").service('httpService', ['$http', function ($http) {
 
 
                         // Return if both are done
-                        if (spotifyDone && soundDone) {
+                        if (youtubeDone && soundDone) {
                             resolve(songsResults)
                         }
                     },
@@ -74,33 +59,33 @@ angular.module("app").service('httpService', ['$http', function ($http) {
                 soundDone = true;
             }
 
-            // Do spotify stuff
-            if (spotify) {
-                that.searchSpotify(searchTerm).then(
+            // Do youtube stuff
+            if (youtube) {
+                that.searchYoutube(searchTerm).then(
                     function (resp) {
                         // It finished
-                        spotifyDone = true;
+                        youtubeDone = true;
 
                         // Get songs
-                        songs = resp.data.tracks.items;
+                        songs = resp.data.items;
 
                         for (var i = 0; i < songs.length && i < 10; i++) {
                             sResult = songs[i];
                             song = {
-                                title: sResult.name,
-                                artist: sResult.artists[0].name,
-                                artwork: sResult.album.images[0].url,
-                                source: "spotify",
-                                length: sResult.duration_ms,
-                                source_id: sResult.id
+                                title: sResult.snippet.title,
+                                artist: sResult.snippet.channelTitle,
+                                artwork: sResult.snippet.thumbnails.default.url,
+                                source: "youtube",
+                                length: null,
+                                source_id: sResult.id.videoId
                                 
                             }
-                            songsResults.spotify.push(song)
+                            songsResults.youtube.push(song)
                         }
 
 
                         // Return if both are done
-                        if (spotifyDone && soundDone) {
+                        if (youtubeDone && soundDone) {
                             resolve(songsResults)
                         }
                     },
@@ -109,7 +94,7 @@ angular.module("app").service('httpService', ['$http', function ($http) {
                     }
                 );
             } else {
-                spotifyDone = true;
+                youtubeDone = true;
             }
 
 
@@ -121,8 +106,8 @@ angular.module("app").service('httpService', ['$http', function ($http) {
      * @param {string} searchTerm - the term to search on the services
      * @return {Promise}
      */
-    this.searchSpotify = function (searchTerm) {
-        var apiUrl = "https://api.spotify.com/v1/search?type=track&q=" + searchTerm;
+    this.searchYoutube = function (searchTerm) {
+        var apiUrl = "https://www.googleapis.com/youtube/v3/search?part=snippet&type=video&videoCategoryId=10&maxResults=10&key=AIzaSyBrPwQw4Gxa1StVB7-jIHMKn0YDSBhrfQs&q=" + searchTerm;
         return $http.get(apiUrl);
     }
 
