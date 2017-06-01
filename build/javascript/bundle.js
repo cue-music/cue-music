@@ -23,6 +23,15 @@ angular.module('app').component('signinComponent', {
         controller: "SigninController"
     });
 },{}],4:[function(require,module,exports){
+angular.module('app').component('smallplayerComponent', {
+        templateUrl: './templates/smallplayerComponent.html',
+        controllerAs: 'vm',
+        bindings: {
+            name: "="
+        },
+        controller: "SmallplayerController"
+    });
+},{}],5:[function(require,module,exports){
 angular.module('app').component('testComponent', {
         templateUrl: './templates/testComponent.html',
         controllerAs: 'vm',
@@ -33,13 +42,23 @@ angular.module('app').component('testComponent', {
     });
 
 
-},{}],5:[function(require,module,exports){
+},{}],6:[function(require,module,exports){
+angular.module('app').component('userprofileComponent', {
+        templateUrl: './templates/userprofileComponent.html',
+        controllerAs: 'vm',
+        bindings: {
+            name: "=",
+            playlists: "="
+        },
+        controller: "UserprofileController"
+    });
+},{}],7:[function(require,module,exports){
 var firebase = require("firebase");
 angular.module('app').controller("PlayerController", [function () {
     var vm = this
     
 }]);
-},{"firebase":18}],6:[function(require,module,exports){
+},{"firebase":23}],8:[function(require,module,exports){
 var firebase = require("firebase");
 angular.module('app').controller("SearchController", ['httpService', function (httpService) {
     var vm = this;
@@ -64,9 +83,10 @@ angular.module('app').controller("SearchController", ['httpService', function (h
         }
     }
 }]);
-},{"firebase":18}],7:[function(require,module,exports){
+},{"firebase":23}],9:[function(require,module,exports){
 var firebase = require("firebase");
-angular.module('app').controller("SigninController", [function () {
+//var Spotify = require("angular-spotify");
+angular.module('app').controller("SigninController", ["$scope", "$rootScope", "Spotify", "$firebaseArray", function ($scope, $rootScope, Spotify, $firebaseArray) {
     var vm = this
     vm.showSignup = false;
     vm.signin = function () {
@@ -74,7 +94,13 @@ angular.module('app').controller("SigninController", [function () {
         firebase.auth().signInWithEmailAndPassword(vm.signinEmail, vm.signinPwd).then(function (userData) {
             var form = document.getElementById("email-form");
             form.reset();
-            console.log(userData);
+            $rootScope.user = userData;
+            //console.log(userData);
+            vm.login();
+            $rootScope.loggedIn = true;
+            $rootScope.userProfile = true;
+            var playlistRef = firebase.database().ref().child("users").child(userData.uid).child("playlists");
+		    $rootScope.userPlaylists = $firebaseArray(playlistRef);
         }).catch(function (error) {
             // Handle Errors here.
             var errorCode = error.code;
@@ -86,27 +112,67 @@ angular.module('app').controller("SigninController", [function () {
     vm.signup = function () {
         if (vm.signupPwd.length >= 6 && vm.signupPwd == vm.signupPwd2) {
             firebase.auth().createUserWithEmailAndPassword(vm.signupEmail, vm.signupPwd).then(function (userData) {
-                console.log("User " + userData.uid + " created successfully!");
+                //console.log("User " + userData.uid + " created successfully!");
                 user = firebase.auth().currentUser;
                 userIdNum = userData.uid;
                 var form = document.getElementById("email-form-2");
                 form.reset();
+                firebase.database().ref().child("users").child(userData.uid).set({
+			      email: userData.email,
+                  playlists: 0
+			    });
+                $rootScope.user = userData;
+                vm.login();
+                $rootScope.loggedIn = true;
+                $rootScope.userProfile = true;
             }).catch(function (error) {
                 var errorMessage = error.message;
                 console.log(errorMessage);
             });
         }
     }
+
+    //login user with spotify
+    vm.login = function () {
+        Spotify.login(true).then(function (data) {
+            Spotify.getCurrentUser().then(function (user) {
+                //vm.username = user.id;
+                //console.log("vm.username");
+                //console.log(user);
+            });
+        });
+    }
+
 }]);
-},{"firebase":18}],8:[function(require,module,exports){
+},{"firebase":23}],10:[function(require,module,exports){
+var firebase = require("firebase");
+angular.module('app').controller("SmallplayerController", [function () {
+    var vm = this
+    
+}]);
+},{"firebase":23}],11:[function(require,module,exports){
 angular.module('app').controller("TestController", ["$scope", function($scope) {
     var vm = this
 }]);
-},{}],9:[function(require,module,exports){
+},{}],12:[function(require,module,exports){
+var firebase = require("firebase");
+angular.module('app').controller("UserprofileController", ["$scope", "$rootScope", function ($scope, $rootScope) {
+    var vm = this
+    vm.addPlaylist = function() {
+        firebase.database().ref().child("users").child($rootScope.user.uid).child("playlists").push({
+            title: "A Playlist",
+            songs: 0,
+            time: firebase.database.ServerValue.TIMESTAMP
+        });
+    }
+
+}]);
+},{"firebase":23}],13:[function(require,module,exports){
 // External Libaries
 var angular = require('angular');
 var firebase = require("firebase");
 var angularfire = require('angularfire');
+var spotify = require('angular-spotify');
 
 
 // Set up firebase
@@ -141,28 +207,53 @@ SC.connect().then(function() {
 // });
 
 // Setup Module
-var app = angular.module('app', ["firebase"]);
+var app = angular.module('app', ["firebase", "spotify"]);
+
+app.config(function (SpotifyProvider) {
+	SpotifyProvider.setClientId('f85ef2aa60924edbae2c811df6e5625c');
+	SpotifyProvider.setRedirectUri('http://localhost:8080/callback.html');
+	SpotifyProvider.setScope('user-read-private playlist-read-private playlist-modify-private playlist-modify-public');
+});
 
 //Angular Controllers
 require('./controllers/test-component-controller.js');
 require('./controllers/signin-component-controller.js');
 require('./controllers/player-component-controller.js');
 require('./controllers/search-component-controller.js');
+require('./controllers/userprofile-component-controller.js');
+require('./controllers/smallplayer-component-controller.js');
 
 // Angular Components
 require('./components/test-component.js');
 require('./components/signin-component.js');
 require('./components/player-component.js');
 require('./components/search-component.js');
+require('./components/userprofile-component.js');
+require('./components/smallplayer-component.js');
 
 // Angular Services
 require('./services/http-service.js')
 
 // Setup Main Ctrl
-app.controller("MainCtrl", ['$scope', 'httpService', function ($scope, httpService) {
+app.controller("MainCtrl", ['$scope','$rootScope', 'httpService', function ($scope, $rootScope, httpService) {
+    $scope.name = "Alex";
+    $rootScope.loggedIn = false;
+    $rootScope.userProfile = false;
+    httpService.testService("a", "b");
+    console.log("main ctrl loaded");
+    $scope.logOut = function() {
+        firebase.auth().signOut().then(function() {
+			console.log("log out");
+		  	$rootScope.loggedIn = false; 
+			$scope.$digest();
+		}).catch(function(error) {
+		  // An error happened.
+          console.log(error);
+		});
+    }
 }]);
 
-},{"./components/player-component.js":1,"./components/search-component.js":2,"./components/signin-component.js":3,"./components/test-component.js":4,"./controllers/player-component-controller.js":5,"./controllers/search-component-controller.js":6,"./controllers/signin-component-controller.js":7,"./controllers/test-component-controller.js":8,"./services/http-service.js":10,"angular":12,"angularfire":14,"firebase":18}],10:[function(require,module,exports){
+},{"./components/player-component.js":1,"./components/search-component.js":2,"./components/signin-component.js":3,"./components/smallplayer-component.js":4,"./components/test-component.js":5,"./components/userprofile-component.js":6,"./controllers/player-component-controller.js":7,"./controllers/search-component-controller.js":8,"./controllers/signin-component-controller.js":9,"./controllers/smallplayer-component-controller.js":10,"./controllers/test-component-controller.js":11,"./controllers/userprofile-component-controller.js":12,"./services/http-service.js":14,"angular":17,"angular-spotify":15,"angularfire":19,"firebase":23}],14:[function(require,module,exports){
 angular.module("app").service('httpService', ['$http', function ($http) {
 
     /**
@@ -302,7 +393,556 @@ angular.module("app").service('httpService', ['$http', function ($http) {
         return $http.get(apiUrl);
     }
 }]);
-},{}],11:[function(require,module,exports){
+},{}],15:[function(require,module,exports){
+(function (window, angular, undefined) {
+  'use strict';
+
+  angular
+    .module('spotify', [])
+    .provider('Spotify', function () {
+
+      // Module global settings.
+      var settings = {};
+      settings.clientId = null;
+      settings.redirectUri = null;
+      settings.scope = null;
+      settings.authToken = null;
+
+      this.setClientId = function (clientId) {
+        settings.clientId = clientId;
+        return settings.clientId;
+      };
+
+      this.getClientId = function () {
+        return settings.clientId;
+      };
+
+      this.setAuthToken = function (authToken) {
+        settings.authToken = authToken;
+        return settings.authToken;
+      };
+
+      this.setRedirectUri = function (redirectUri) {
+        settings.redirectUri = redirectUri;
+        return settings.redirectUri;
+      };
+
+      this.getRedirectUri = function () {
+        return settings.redirectUri;
+      };
+
+      this.setScope = function (scope) {
+        settings.scope = scope;
+        return settings.scope;
+      };
+
+      var utils = {};
+      utils.toQueryString = function (obj) {
+        var parts = [];
+        angular.forEach(obj, function (value, key) {
+          this.push(encodeURIComponent(key) + '=' + encodeURIComponent(value));
+        }, parts);
+        return parts.join('&');
+      };
+
+      /**
+       * API Base URL
+       */
+      settings.apiBase = 'https://api.spotify.com/v1';
+
+      this.$get = ['$q', '$http', '$window', function ($q, $http, $window) {
+
+        function NgSpotify () {
+          this.clientId = settings.clientId;
+          this.redirectUri = settings.redirectUri;
+          this.apiBase = settings.apiBase;
+          this.scope = settings.scope;
+          this.authToken = settings.authToken;
+          this.toQueryString = utils.toQueryString;
+        }
+
+        function openDialog (uri, name, options, cb) {
+          var win = window.open(uri, name, options);
+          var interval = window.setInterval(function () {
+            try {
+              if (!win || win.closed) {
+                window.clearInterval(interval);
+                cb(win);
+              }
+            } catch (e) {}
+          }, 1000);
+          return win;
+        }
+
+        NgSpotify.prototype = {
+          api: function (endpoint, method, params, data, headers) {
+            var deferred = $q.defer();
+
+            $http({
+              url: this.apiBase + endpoint,
+              method: method ? method : 'GET',
+              params: params,
+              data: data,
+              headers: headers,
+              withCredentials: false
+            })
+            .then(function (data) {
+              deferred.resolve(data);
+            })
+            .catch(function (data) {
+              deferred.reject(data);
+            });
+            return deferred.promise;
+          },
+
+          _auth: function (isJson) {
+            var auth = {
+              'Authorization': 'Bearer ' + this.authToken
+            };
+            if (isJson) {
+              auth['Content-Type'] = 'application/json';
+            }
+            return auth;
+          },
+
+          /**
+            ====================== Albums =====================
+           */
+
+          /**
+           * Gets an album
+           * Pass in album id or spotify uri
+           */
+          getAlbum: function (album) {
+            album = album.indexOf('spotify:') === -1 ? album : album.split(':')[2];
+
+            return this.api('/albums/' + album);
+          },
+
+          /**
+           * Gets an album
+           * Pass in comma separated string or array of album ids
+           */
+          getAlbums: function (albums) {
+            albums = angular.isString(albums) ? albums.split(',') : albums;
+            angular.forEach(albums, function (value, index) {
+              albums[index] = value.indexOf('spotify:') > -1 ? value.split(':')[2] : value;
+            });
+            return this.api('/albums', 'GET', {
+              ids: albums ? albums.toString() : ''
+            });
+          },
+
+          /**
+           * Get Album Tracks
+           * Pass in album id or spotify uri
+           */
+          getAlbumTracks: function (album, options) {
+            album = album.indexOf('spotify:') === -1 ? album : album.split(':')[2];
+
+            return this.api('/albums/' + album + '/tracks', 'GET', options);
+          },
+
+
+          /**
+            ====================== Artists =====================
+           */
+
+          /**
+           * Get an Artist
+           */
+          getArtist: function (artist) {
+            artist = artist.indexOf('spotify:') === -1 ? artist : artist.split(':')[2];
+
+            return this.api('/artists/' + artist);
+          },
+
+          /**
+           * Get multiple artists
+           */
+          getArtists: function (artists) {
+            artists = angular.isString(artists) ? artists.split(',') : artists;
+            angular.forEach(artists, function (value, index) {
+              artists[index] = value.indexOf('spotify:') > -1 ? value.split(':')[2] : value;
+            });
+            return this.api('/artists/', 'GET', {
+              ids: artists ? artists.toString() : ''
+            });
+          },
+
+          //Artist Albums
+          getArtistAlbums: function (artist, options) {
+            artist = artist.indexOf('spotify:') === -1 ? artist : artist.split(':')[2];
+
+            return this.api('/artists/' + artist + '/albums', 'GET', options);
+          },
+
+          /**
+           * Get Artist Top Tracks
+           * The country: an ISO 3166-1 alpha-2 country code.
+           */
+          getArtistTopTracks: function (artist, country) {
+            artist = artist.indexOf('spotify:') === -1 ? artist : artist.split(':')[2];
+
+            return this.api('/artists/' + artist + '/top-tracks', 'GET', {
+              country: country
+            });
+          },
+
+          getRelatedArtists: function (artist) {
+            artist = artist.indexOf('spotify:') === -1 ? artist : artist.split(':')[2];
+
+            return this.api('/artists/' + artist + '/related-artists');
+          },
+
+
+          /**
+            ====================== Browse =====================
+           */
+          getFeaturedPlaylists: function (options) {
+            return this.api('/browse/featured-playlists', 'GET', options, null, this._auth());
+          },
+
+          getNewReleases: function (options) {
+            return this.api('/browse/new-releases', 'GET', options, null, this._auth());
+          },
+
+          getCategories: function (options) {
+            return this.api('/browse/categories', 'GET', options, null, this._auth());
+          },
+
+          getCategory: function (category_id, options) {
+            return this.api('/browse/categories/' + category_id, 'GET', options, null, this._auth());
+          },
+
+          getCategoryPlaylists: function (category_id, options) {
+            return this.api('/browse/categories/' + category_id + '/playlists', 'GET', options, null, this._auth());
+          },
+
+          getRecommendations: function (options) {
+            return this.api('/recommendations', 'GET', options, null, this._auth());
+          },
+
+          getAvailableGenreSeeds: function () {
+            return this.api('/recommendations/available-genre-seeds', 'GET', null, null, this._auth());
+          },
+
+
+          /**
+            ====================== Following =====================
+           */
+          following: function (type, options) {
+            options = options || {};
+            options.type = type;
+            return this.api('/me/following', 'GET', options, null, this._auth());
+          },
+
+          follow: function (type, ids) {
+            return this.api('/me/following', 'PUT', { type: type, ids: ids }, null, this._auth());
+          },
+
+          unfollow: function (type, ids) {
+            return this.api('/me/following', 'DELETE', { type: type, ids: ids }, null, this._auth());
+          },
+
+          userFollowingContains: function (type, ids) {
+            return this.api('/me/following/contains', 'GET', { type: type, ids: ids }, null, this._auth());
+          },
+
+          followPlaylist: function (userId, playlistId, isPublic) {
+            return this.api('/users/' + userId + '/playlists/' + playlistId + '/followers', 'PUT', null, {
+              public: isPublic || null
+            }, this._auth(true));
+          },
+
+          unfollowPlaylist: function (userId, playlistId) {
+            return this.api('/users/' + userId + '/playlists/' + playlistId + '/followers', 'DELETE', null, null, this._auth());
+          },
+
+          playlistFollowingContains: function(userId, playlistId, ids) {
+            return this.api('/users/' + userId + '/playlists/' + playlistId + '/followers/contains', 'GET', {
+              ids: ids.toString()
+            }, null, this._auth());
+          },
+
+
+          /**
+            ====================== Library =====================
+           */
+          getSavedUserTracks: function (options) {
+            return this.api('/me/tracks', 'GET', options, null, this._auth());
+          },
+
+          userTracksContains: function (tracks) {
+            tracks = angular.isString(tracks) ? tracks.split(',') : tracks;
+            angular.forEach(tracks, function (value, index) {
+              tracks[index] = value.indexOf('spotify:') > -1 ? value.split(':')[2] : value;
+            });
+            return this.api('/me/tracks/contains', 'GET', {
+              ids: tracks.toString()
+            }, null, this._auth());
+          },
+
+          saveUserTracks: function (tracks) {
+            tracks = angular.isString(tracks) ? tracks.split(',') : tracks;
+            angular.forEach(tracks, function (value, index) {
+              tracks[index] = value.indexOf('spotify:') > -1 ? value.split(':')[2] : value;
+            });
+            return this.api('/me/tracks', 'PUT', {
+              ids: tracks.toString()
+            }, null, this._auth());
+          },
+
+          removeUserTracks: function (tracks) {
+            tracks = angular.isString(tracks) ? tracks.split(',') : tracks;
+            angular.forEach(tracks, function (value, index) {
+              tracks[index] = value.indexOf('spotify:') > -1 ? value.split(':')[2] : value;
+            });
+            return this.api('/me/tracks', 'DELETE', {
+              ids: tracks.toString()
+            }, null, this._auth(true));
+          },
+
+          saveUserAlbums: function (albums) {
+            albums = angular.isString(albums) ? albums.split(',') : albums;
+            angular.forEach(albums, function (value, index) {
+              albums[index] = value.indexOf('spotify:') > -1 ? value.split(':')[2] : value;
+            });
+            return this.api('/me/albums', 'PUT', {
+              ids: albums.toString()
+            }, null, this._auth());
+          },
+
+          getSavedUserAlbums: function (options) {
+            return this.api('/me/albums', 'GET', options, null, this._auth());
+          },
+
+          removeUserAlbums: function (albums) {
+            albums = angular.isString(albums) ? albums.split(',') : albums;
+            angular.forEach(albums, function (value, index) {
+              albums[index] = value.indexOf('spotify:') > -1 ? value.split(':')[2] : value;
+            });
+            return this.api('/me/albums', 'DELETE', {
+              ids: albums.toString()
+            }, null, this._auth(true));
+          },
+
+          userAlbumsContains: function (albums) {
+            albums = angular.isString(albums) ? albums.split(',') : albums;
+            angular.forEach(albums, function (value, index) {
+              albums[index] = value.indexOf('spotify:') > -1 ? value.split(':')[2] : value;
+            });
+            return this.api('/me/albums/contains', 'GET', {
+              ids: albums.toString()
+            }, null, this._auth());
+          },
+
+
+          /**
+            ====================== Personalization =====================
+           */
+           getUserTopArtists: function (options) {
+             options = options || {};
+             return this.api('/me/top/artists', 'GET', options, null, this._auth());
+           },
+
+           getUserTopTracks: function (options) {
+             options = options || {};
+             return this.api('/me/top/tracks', 'GET', options, null, this._auth());
+           },
+
+
+          /**
+            ====================== Playlists =====================
+           */
+          getUserPlaylists: function (userId, options) {
+            return this.api('/users/' + userId + '/playlists', 'GET', options, null, {
+              'Authorization': 'Bearer ' + this.authToken
+            });
+          },
+
+          getPlaylist: function (userId, playlistId, options) {
+            return this.api('/users/' + userId + '/playlists/' + playlistId, 'GET', options, null, this._auth());
+          },
+
+          getPlaylistTracks: function (userId, playlistId, options) {
+            return this.api('/users/' + userId + '/playlists/' + playlistId + '/tracks', 'GET', options, null, this._auth());
+          },
+
+          createPlaylist: function (userId, options) {
+            return this.api('/users/' + userId + '/playlists', 'POST', null, options, this._auth(true));
+          },
+
+          addPlaylistTracks: function (userId, playlistId, tracks, options) {
+            tracks = angular.isArray(tracks) ? tracks : tracks.split(',');
+            angular.forEach(tracks, function (value, index) {
+              tracks[index] = value.indexOf('spotify:') === -1 ? 'spotify:track:' + value : value;
+            });
+            return this.api('/users/' + userId + '/playlists/' + playlistId + '/tracks', 'POST', {
+              uris: tracks.toString(),
+              position: options ? options.position : null
+            }, null, this._auth(true));
+          },
+
+          removePlaylistTracks: function (userId, playlistId, tracks) {
+            tracks = angular.isArray(tracks) ? tracks : tracks.split(',');
+            var track;
+            angular.forEach(tracks, function (value, index) {
+              track = tracks[index];
+              tracks[index] = {
+                uri: track.indexOf('spotify:') === -1 ? 'spotify:track:' + track : track
+              };
+            });
+            return this.api('/users/' + userId + '/playlists/' + playlistId + '/tracks', 'DELETE', null, {
+              tracks: tracks
+            }, this._auth(true));
+          },
+
+          reorderPlaylistTracks: function (userId, playlistId, options) {
+            return this.api('/users/' + userId + '/playlists/' + playlistId + '/tracks', 'PUT', null, options, this._auth(true));
+          },
+
+          replacePlaylistTracks: function (userId, playlistId, tracks) {
+            tracks = angular.isArray(tracks) ? tracks : tracks.split(',');
+            var track;
+            angular.forEach(tracks, function (value, index) {
+              track = tracks[index];
+              tracks[index] = track.indexOf('spotify:') === -1 ? 'spotify:track:' + track : track;
+            });
+            return this.api('/users/' + userId + '/playlists/' + playlistId + '/tracks', 'PUT', {
+              uris: tracks.toString()
+            }, null, this._auth(true));
+          },
+
+          updatePlaylistDetails: function (userId, playlistId, options) {
+            return this.api('/users/' + userId + '/playlists/' + playlistId, 'PUT', null, options, this._auth(true));
+          },
+
+          /**
+            ====================== Profiles =====================
+           */
+
+          getUser: function (userId) {
+            return this.api('/users/' + userId);
+          },
+
+          getCurrentUser: function () {
+            return this.api('/me', 'GET', null, null, this._auth());
+          },
+
+
+
+          /**
+           * Search Spotify
+           * q = search query
+           * type = artist, album or track
+           */
+          search: function (q, type, options) {
+            options = options || {};
+            options.q = q;
+            options.type = type;
+
+            return this.api('/search', 'GET', options);
+          },
+
+
+          /**
+            ====================== Tracks =====================
+           */
+          getTrack: function (track) {
+            track = track.indexOf('spotify:') === -1 ? track : track.split(':')[2];
+
+            return this.api('/tracks/' + track);
+          },
+
+          getTracks: function (tracks) {
+            tracks = angular.isString(tracks) ? tracks.split(',') : tracks;
+            angular.forEach(tracks, function (value, index) {
+              tracks[index] = value.indexOf('spotify:') > -1 ? value.split(':')[2] : value;
+            });
+            return this.api('/tracks/', 'GET', {
+              ids: tracks ? tracks.toString() : ''
+            });
+          },
+
+          getTrackAudioFeatures: function (track) {
+            track = track.indexOf('spotify:') === -1 ? track : track.split(':')[2];
+            return this.api('/audio-features/' + track, 'GET', null, null, this._auth());
+          },
+
+          getTracksAudioFeatures: function (tracks) {
+            tracks = angular.isString(tracks) ? tracks.split(',') : tracks;
+            angular.forEach(tracks, function (value, index) {
+              tracks[index] = value.indexOf('spotify:') > -1 ? value.split(':')[2] : value;
+            });
+            return this.api('/audio-features/', 'GET', {
+              ids: tracks ? tracks.toString() : ''
+            }, null, this._auth());
+          },
+
+
+          /**
+            ====================== Login =====================
+           */
+          setAuthToken: function (authToken) {
+            this.authToken = authToken;
+            return this.authToken;
+          },
+
+          login: function () {
+            var deferred = $q.defer();
+            var that = this;
+
+            var w = 400,
+                h = 500,
+                left = (screen.width / 2) - (w / 2),
+                top = (screen.height / 2) - (h / 2);
+
+            var params = {
+              client_id: this.clientId,
+              redirect_uri: this.redirectUri,
+              scope: this.scope || '',
+              response_type: 'token'
+            };
+
+            var authCompleted = false;
+            var authWindow = openDialog(
+              'https://accounts.spotify.com/authorize?' + this.toQueryString(params),
+              'Spotify',
+              'menubar=no,location=no,resizable=yes,scrollbars=yes,status=no,width=' + w + ',height=' + h + ',top=' + top + ',left=' + left,
+              function () {
+                if (!authCompleted) {
+                  deferred.reject();
+                }
+              }
+            );
+
+            function storageChanged (e) {
+              if (e.key === 'spotify-token') {
+                if (authWindow) { authWindow.close(); }
+                authCompleted = true;
+
+                that.setAuthToken(e.newValue);
+                $window.removeEventListener('storage', storageChanged, false);
+
+                deferred.resolve(e.newValue);
+              }
+            }
+
+            $window.addEventListener('storage', storageChanged, false);
+
+            return deferred.promise;
+          }
+        };
+
+        return new NgSpotify();
+      }];
+
+    });
+
+}(window, angular));
+
+},{}],16:[function(require,module,exports){
 /**
  * @license AngularJS v1.6.4
  * (c) 2010-2017 Google, Inc. http://angularjs.org
@@ -33675,11 +34315,11 @@ $provide.value("$locale", {
 })(window);
 
 !window.angular.$$csp().noInlineStyle && window.angular.element(document.head).prepend('<style type="text/css">@charset "UTF-8";[ng\\:cloak],[ng-cloak],[data-ng-cloak],[x-ng-cloak],.ng-cloak,.x-ng-cloak,.ng-hide:not(.ng-hide-animate){display:none !important;}ng\\:form{display:block;}.ng-animate-shim{visibility:hidden;}.ng-anchor{position:absolute;}</style>');
-},{}],12:[function(require,module,exports){
+},{}],17:[function(require,module,exports){
 require('./angular');
 module.exports = angular;
 
-},{"./angular":11}],13:[function(require,module,exports){
+},{"./angular":16}],18:[function(require,module,exports){
 /*!
  * AngularFire is the officially supported AngularJS binding for Firebase. Firebase
  * is a full backend so you don't need servers to build your Angular app. AngularFire
@@ -36162,7 +36802,7 @@ if ( typeof Object.getPrototypeOf !== "function" ) {
     }
 })();
 
-},{}],14:[function(require,module,exports){
+},{}],19:[function(require,module,exports){
 // Make sure dependencies are loaded on the window
 require('angular');
 require('firebase');
@@ -36173,7 +36813,7 @@ require('./dist/angularfire');
 // Export the module name from the Angular module
 module.exports = 'firebase';
 
-},{"./dist/angularfire":13,"angular":12,"firebase":18}],15:[function(require,module,exports){
+},{"./dist/angularfire":18,"angular":17,"firebase":23}],20:[function(require,module,exports){
 /*! @license Firebase v3.9.0
 Build: rev-cc77c9e
 Terms: https://firebase.google.com/terms/ */
@@ -36181,7 +36821,7 @@ Terms: https://firebase.google.com/terms/ */
 var firebase=function(e){function t(r){if(n[r])return n[r].exports;var i=n[r]={i:r,l:!1,exports:{}};return e[r].call(i.exports,i,i.exports,t),i.l=!0,i.exports}var n={};return t.m=e,t.c=n,t.i=function(e){return e},t.d=function(e,n,r){t.o(e,n)||Object.defineProperty(e,n,{configurable:!1,enumerable:!0,get:r})},t.n=function(e){var n=e&&e.__esModule?function(){return e.default}:function(){return e};return t.d(n,"a",n),n},t.o=function(e,t){return Object.prototype.hasOwnProperty.call(e,t)},t.p="",t(t.s=11)}([function(e,t,n){"use strict";(function(e){Object.defineProperty(t,"__esModule",{value:!0});var r=void 0;if(void 0!==e)r=e;else if("undefined"!=typeof self)r=self;else try{r=Function("return this")()}catch(e){throw new Error("polyfill failed because global object is unavailable in this environment")}var i=r.Promise||n(8);t.local={Promise:i,GoogPromise:i}}).call(t,n(1))},function(e,t){var n;n=function(){return this}();try{n=n||Function("return this")()||(0,eval)("this")}catch(e){"object"==typeof window&&(n=window)}e.exports=n},function(e,t,n){"use strict";Object.defineProperty(t,"__esModule",{value:!0});var r=n(5),i=(0,r.createFirebaseNamespace)();t.default=i,e.exports=t.default},function(e,t,n){"use strict";function r(e){return i(void 0,e)}function i(e,t){if(!(t instanceof Object))return t;switch(t.constructor){case Date:return new Date(t.getTime());case Object:void 0===e&&(e={});break;case Array:e=[];break;default:return t}for(var n in t)t.hasOwnProperty(n)&&(e[n]=i(e[n],t[n]));return e}function o(e,t,n){e[t]=n}Object.defineProperty(t,"__esModule",{value:!0}),t.deepCopy=r,t.deepExtend=i,t.patchProperty=o},function(e,t,n){"use strict";function r(e,t){if(!(e instanceof t))throw new TypeError("Cannot call a class as a function")}function i(e){var t=a;return a=e,t}Object.defineProperty(t,"__esModule",{value:!0});var o=function(){function e(e,t){for(var n=0;n<t.length;n++){var r=t[n];r.enumerable=r.enumerable||!1,r.configurable=!0,"value"in r&&(r.writable=!0),Object.defineProperty(e,r.key,r)}}return function(t,n,r){return n&&e(t.prototype,n),r&&e(t,r),t}}();t.patchCapture=i;var a=Error.captureStackTrace,c=function e(t,n){if(r(this,e),this.code=t,this.message=n,a)a(this,s.prototype.create);else{var i=Error.apply(this,arguments);this.name="FirebaseError",Object.defineProperty(this,"stack",{get:function(){return i.stack}})}};c.prototype=Object.create(Error.prototype),c.prototype.constructor=c,c.prototype.name="FirebaseError";var s=t.ErrorFactory=function(){function e(t,n,i){r(this,e),this.service=t,this.serviceName=n,this.errors=i,this.pattern=/\{\$([^}]+)}/g}return o(e,[{key:"create",value:function(e,t){void 0===t&&(t={});var n=this.errors[e],r=this.service+"/"+e,i=void 0;i=void 0===n?"Error":n.replace(this.pattern,function(e,n){var r=t[n];return void 0!==r?r.toString():"<"+n+"?>"}),i=this.serviceName+": "+i+" ("+r+").";var o=new c(r,i);for(var a in t)t.hasOwnProperty(a)&&"_"!==a.slice(-1)&&(o[a]=t[a]);return o}}]),e}()},function(e,t,n){"use strict";function r(e,t){if(!(e instanceof t))throw new TypeError("Cannot call a class as a function")}function i(){function e(e){e=e||d;var t=r[e];return void 0===t&&o("no-app",{name:e}),t}function t(e,t){Object.keys(a).forEach(function(r){var i=n(e,r);null!==i&&h[i]&&h[i](t,e)})}function n(e,t){if("serverAuth"===t)return null;var n=t,r=e.options;return"auth"===t&&(r.serviceAccount||r.credential)&&(n="serverAuth","serverAuth"in a||o("sa-not-supported")),n}var r={},a={},h={},v={__esModule:!0,initializeApp:function(e,n){void 0===n?n=d:"string"==typeof n&&""!==n||o("bad-app-name",{name:n+""}),void 0!==r[n]&&o("duplicate-app",{name:n});var i=new p(e,n,v);return r[n]=i,t(i,"create"),void 0!=i.INTERNAL&&void 0!=i.INTERNAL.getToken||(0,c.deepExtend)(i,{INTERNAL:{getUid:function(){return null},getToken:function(){return l.resolve(null)},addAuthTokenListener:function(){},removeAuthTokenListener:function(){}}}),i},app:e,apps:null,Promise:l,SDK_VERSION:"3.9.0",INTERNAL:{registerService:function(t,n,r,i,s){a[t]&&o("duplicate-service",{name:t}),a[t]=s?n:function(e,t){return n(e,t,d)},i&&(h[t]=i);var u=void 0;return u=function(n){return void 0===n&&(n=e()),"function"!=typeof n[t]&&o("invalid-app-argument",{name:t}),n[t]()},void 0!==r&&(0,c.deepExtend)(u,r),v[t]=u,u},createFirebaseNamespace:i,extendNamespace:function(e){(0,c.deepExtend)(v,e)},createSubscribe:s.createSubscribe,ErrorFactory:u.ErrorFactory,removeApp:function(e){t(r[e],"delete"),delete r[e]},factories:a,useAsService:n,Promise:f.local.GoogPromise,deepExtend:c.deepExtend}};return(0,c.patchProperty)(v,"default",v),Object.defineProperty(v,"apps",{get:function(){return Object.keys(r).map(function(e){return r[e]})}}),(0,c.patchProperty)(e,"App",p),v}function o(e,t){throw v.create(e,t)}Object.defineProperty(t,"__esModule",{value:!0});var a=function(){function e(e,t){for(var n=0;n<t.length;n++){var r=t[n];r.enumerable=r.enumerable||!1,r.configurable=!0,"value"in r&&(r.writable=!0),Object.defineProperty(e,r.key,r)}}return function(t,n,r){return n&&e(t.prototype,n),r&&e(t,r),t}}();t.createFirebaseNamespace=i;var c=n(3),s=n(6),u=n(4),f=n(0),l=f.local.Promise,d="[DEFAULT]",p=function(){function e(t,n,i){var o=this;r(this,e),this.firebase_=i,this.isDeleted_=!1,this.services_={},this.name_=n,this.options_=(0,c.deepCopy)(t);var a="credential"in this.options_,s="serviceAccount"in this.options_;if(a||s){var u=s?"serviceAccount":"credential";"undefined"!=typeof console&&console.log("The '"+u+"' property specified in the first argument to initializeApp() is deprecated and will be removed in the next major version. You should instead use the 'firebase-admin' package. See https://firebase.google.com/docs/admin/setup for details on how to get started.")}Object.keys(i.INTERNAL.factories).forEach(function(e){var t=i.INTERNAL.useAsService(o,e);if(null!==t){var n=o.getService.bind(o,t);(0,c.patchProperty)(o,e,n)}})}return a(e,[{key:"delete",value:function(){var e=this;return new l(function(t){e.checkDestroyed_(),t()}).then(function(){e.firebase_.INTERNAL.removeApp(e.name_);var t=[];return Object.keys(e.services_).forEach(function(n){Object.keys(e.services_[n]).forEach(function(r){t.push(e.services_[n][r])})}),l.all(t.map(function(e){return e.INTERNAL.delete()}))}).then(function(){e.isDeleted_=!0,e.services_={}})}},{key:"getService",value:function(e,t){this.checkDestroyed_(),void 0===this.services_[e]&&(this.services_[e]={});var n=t||d;if(void 0===this.services_[e][n]){var r=this.firebase_.INTERNAL.factories[e](this,this.extendApp.bind(this),t);return this.services_[e][n]=r,r}return this.services_[e][n]}},{key:"extendApp",value:function(e){(0,c.deepExtend)(this,e)}},{key:"checkDestroyed_",value:function(){this.isDeleted_&&o("app-deleted",{name:this.name_})}},{key:"name",get:function(){return this.checkDestroyed_(),this.name_}},{key:"options",get:function(){return this.checkDestroyed_(),this.options_}}]),e}();p.prototype.name&&p.prototype.options||p.prototype.delete||console.log("dc");var h={"no-app":"No Firebase App '{$name}' has been created - call Firebase App.initializeApp()","bad-app-name":"Illegal App name: '{$name}","duplicate-app":"Firebase App named '{$name}' already exists","app-deleted":"Firebase App named '{$name}' already deleted","duplicate-service":"Firebase service named '{$name}' already registered","sa-not-supported":"Initializing the Firebase SDK with a service account is only allowed in a Node.js environment. On client devices, you should instead initialize the SDK with an api key and auth domain","invalid-app-argument":"firebase.{$name}() takes either no argument or a Firebase App instance."},v=new u.ErrorFactory("app","Firebase",h)},function(e,t,n){"use strict";function r(e,t){if(!(e instanceof t))throw new TypeError("Cannot call a class as a function")}function i(e,t){var n=new d(e,t);return n.subscribe.bind(n)}function o(e,t){return function(){for(var n=arguments.length,r=Array(n),i=0;i<n;i++)r[i]=arguments[i];l.resolve(!0).then(function(){e.apply(void 0,r)}).catch(function(e){t&&t(e)})}}function a(e,t){if("object"!==(void 0===e?"undefined":s(e))||null===e)return!1;var n=!0,r=!1,i=void 0;try{for(var o,a=t[Symbol.iterator]();!(n=(o=a.next()).done);n=!0){var c=o.value;if(c in e&&"function"==typeof e[c])return!0}}catch(e){r=!0,i=e}finally{try{!n&&a.return&&a.return()}finally{if(r)throw i}}return!1}function c(){}Object.defineProperty(t,"__esModule",{value:!0});var s="function"==typeof Symbol&&"symbol"==typeof Symbol.iterator?function(e){return typeof e}:function(e){return e&&"function"==typeof Symbol&&e.constructor===Symbol&&e!==Symbol.prototype?"symbol":typeof e},u=function(){function e(e,t){for(var n=0;n<t.length;n++){var r=t[n];r.enumerable=r.enumerable||!1,r.configurable=!0,"value"in r&&(r.writable=!0),Object.defineProperty(e,r.key,r)}}return function(t,n,r){return n&&e(t.prototype,n),r&&e(t,r),t}}();t.createSubscribe=i,t.async=o;var f=n(0),l=f.local.Promise,d=function(){function e(t,n){var i=this;r(this,e),this.observers=[],this.unsubscribes=[],this.observerCount=0,this.task=l.resolve(),this.finalized=!1,this.onNoObservers=n,this.task.then(function(){t(i)}).catch(function(e){i.error(e)})}return u(e,[{key:"next",value:function(e){this.forEachObserver(function(t){t.next(e)})}},{key:"error",value:function(e){this.forEachObserver(function(t){t.error(e)}),this.close(e)}},{key:"complete",value:function(){this.forEachObserver(function(e){e.complete()}),this.close()}},{key:"subscribe",value:function(e,t,n){var r=this,i=void 0;if(void 0===e&&void 0===t&&void 0===n)throw new Error("Missing Observer.");i=a(e,["next","error","complete"])?e:{next:e,error:t,complete:n},void 0===i.next&&(i.next=c),void 0===i.error&&(i.error=c),void 0===i.complete&&(i.complete=c);var o=this.unsubscribeOne.bind(this,this.observers.length);return this.finalized&&this.task.then(function(){try{r.finalError?i.error(r.finalError):i.complete()}catch(e){}}),this.observers.push(i),o}},{key:"unsubscribeOne",value:function(e){void 0!==this.observers&&void 0!==this.observers[e]&&(delete this.observers[e],this.observerCount-=1,0===this.observerCount&&void 0!==this.onNoObservers&&this.onNoObservers(this))}},{key:"forEachObserver",value:function(e){if(!this.finalized)for(var t=0;t<this.observers.length;t++)this.sendOne(t,e)}},{key:"sendOne",value:function(e,t){var n=this;this.task.then(function(){if(void 0!==n.observers&&void 0!==n.observers[e])try{t(n.observers[e])}catch(e){"undefined"!=typeof console&&console.error&&console.error(e)}})}},{key:"close",value:function(e){var t=this;this.finalized||(this.finalized=!0,void 0!==e&&(this.finalError=e),this.task.then(function(){t.observers=void 0,t.onNoObservers=void 0}))}}]),e}()},function(e,t){function n(){throw new Error("setTimeout has not been defined")}function r(){throw new Error("clearTimeout has not been defined")}function i(e){if(f===setTimeout)return setTimeout(e,0);if((f===n||!f)&&setTimeout)return f=setTimeout,setTimeout(e,0);try{return f(e,0)}catch(t){try{return f.call(null,e,0)}catch(t){return f.call(this,e,0)}}}function o(e){if(l===clearTimeout)return clearTimeout(e);if((l===r||!l)&&clearTimeout)return l=clearTimeout,clearTimeout(e);try{return l(e)}catch(t){try{return l.call(null,e)}catch(t){return l.call(this,e)}}}function a(){v&&p&&(v=!1,p.length?h=p.concat(h):m=-1,h.length&&c())}function c(){if(!v){var e=i(a);v=!0;for(var t=h.length;t;){for(p=h,h=[];++m<t;)p&&p[m].run();m=-1,t=h.length}p=null,v=!1,o(e)}}function s(e,t){this.fun=e,this.array=t}function u(){}var f,l,d=e.exports={};!function(){try{f="function"==typeof setTimeout?setTimeout:n}catch(e){f=n}try{l="function"==typeof clearTimeout?clearTimeout:r}catch(e){l=r}}();var p,h=[],v=!1,m=-1;d.nextTick=function(e){var t=new Array(arguments.length-1);if(arguments.length>1)for(var n=1;n<arguments.length;n++)t[n-1]=arguments[n];h.push(new s(e,t)),1!==h.length||v||i(c)},s.prototype.run=function(){this.fun.apply(null,this.array)},d.title="browser",d.browser=!0,d.env={},d.argv=[],d.version="",d.versions={},d.on=u,d.addListener=u,d.once=u,d.off=u,d.removeListener=u,d.removeAllListeners=u,d.emit=u,d.binding=function(e){throw new Error("process.binding is not supported")},d.cwd=function(){return"/"},d.chdir=function(e){throw new Error("process.chdir is not supported")},d.umask=function(){return 0}},function(e,t,n){(function(t){!function(n){function r(){}function i(e,t){return function(){e.apply(t,arguments)}}function o(e){if("object"!=typeof this)throw new TypeError("Promises must be constructed via new");if("function"!=typeof e)throw new TypeError("not a function");this._state=0,this._handled=!1,this._value=void 0,this._deferreds=[],l(e,this)}function a(e,t){for(;3===e._state;)e=e._value;if(0===e._state)return void e._deferreds.push(t);e._handled=!0,o._immediateFn(function(){var n=1===e._state?t.onFulfilled:t.onRejected;if(null===n)return void(1===e._state?c:s)(t.promise,e._value);var r;try{r=n(e._value)}catch(e){return void s(t.promise,e)}c(t.promise,r)})}function c(e,t){try{if(t===e)throw new TypeError("A promise cannot be resolved with itself.");if(t&&("object"==typeof t||"function"==typeof t)){var n=t.then;if(t instanceof o)return e._state=3,e._value=t,void u(e);if("function"==typeof n)return void l(i(n,t),e)}e._state=1,e._value=t,u(e)}catch(t){s(e,t)}}function s(e,t){e._state=2,e._value=t,u(e)}function u(e){2===e._state&&0===e._deferreds.length&&o._immediateFn(function(){e._handled||o._unhandledRejectionFn(e._value)});for(var t=0,n=e._deferreds.length;t<n;t++)a(e,e._deferreds[t]);e._deferreds=null}function f(e,t,n){this.onFulfilled="function"==typeof e?e:null,this.onRejected="function"==typeof t?t:null,this.promise=n}function l(e,t){var n=!1;try{e(function(e){n||(n=!0,c(t,e))},function(e){n||(n=!0,s(t,e))})}catch(e){if(n)return;n=!0,s(t,e)}}var d=setTimeout;o.prototype.catch=function(e){return this.then(null,e)},o.prototype.then=function(e,t){var n=new this.constructor(r);return a(this,new f(e,t,n)),n},o.all=function(e){var t=Array.prototype.slice.call(e);return new o(function(e,n){function r(o,a){try{if(a&&("object"==typeof a||"function"==typeof a)){var c=a.then;if("function"==typeof c)return void c.call(a,function(e){r(o,e)},n)}t[o]=a,0==--i&&e(t)}catch(e){n(e)}}if(0===t.length)return e([]);for(var i=t.length,o=0;o<t.length;o++)r(o,t[o])})},o.resolve=function(e){return e&&"object"==typeof e&&e.constructor===o?e:new o(function(t){t(e)})},o.reject=function(e){return new o(function(t,n){n(e)})},o.race=function(e){return new o(function(t,n){for(var r=0,i=e.length;r<i;r++)e[r].then(t,n)})},o._immediateFn="function"==typeof t&&function(e){t(e)}||function(e){d(e,0)},o._unhandledRejectionFn=function(e){"undefined"!=typeof console&&console&&console.warn("Possible Unhandled Promise Rejection:",e)},o._setImmediateFn=function(e){o._immediateFn=e},o._setUnhandledRejectionFn=function(e){o._unhandledRejectionFn=e},void 0!==e&&e.exports?e.exports=o:n.Promise||(n.Promise=o)}(this)}).call(t,n(10).setImmediate)},function(e,t,n){(function(e,t){!function(e,n){"use strict";function r(e){"function"!=typeof e&&(e=new Function(""+e));for(var t=new Array(arguments.length-1),n=0;n<t.length;n++)t[n]=arguments[n+1];var r={callback:e,args:t};return u[s]=r,c(s),s++}function i(e){delete u[e]}function o(e){var t=e.callback,r=e.args;switch(r.length){case 0:t();break;case 1:t(r[0]);break;case 2:t(r[0],r[1]);break;case 3:t(r[0],r[1],r[2]);break;default:t.apply(n,r)}}function a(e){if(f)setTimeout(a,0,e);else{var t=u[e];if(t){f=!0;try{o(t)}finally{i(e),f=!1}}}}if(!e.setImmediate){var c,s=1,u={},f=!1,l=e.document,d=Object.getPrototypeOf&&Object.getPrototypeOf(e);d=d&&d.setTimeout?d:e,"[object process]"==={}.toString.call(e.process)?function(){c=function(e){t.nextTick(function(){a(e)})}}():function(){if(e.postMessage&&!e.importScripts){var t=!0,n=e.onmessage;return e.onmessage=function(){t=!1},e.postMessage("","*"),e.onmessage=n,t}}()?function(){var t="setImmediate$"+Math.random()+"$",n=function(n){n.source===e&&"string"==typeof n.data&&0===n.data.indexOf(t)&&a(+n.data.slice(t.length))};e.addEventListener?e.addEventListener("message",n,!1):e.attachEvent("onmessage",n),c=function(n){e.postMessage(t+n,"*")}}():e.MessageChannel?function(){var e=new MessageChannel;e.port1.onmessage=function(e){a(e.data)},c=function(t){e.port2.postMessage(t)}}():l&&"onreadystatechange"in l.createElement("script")?function(){var e=l.documentElement;c=function(t){var n=l.createElement("script");n.onreadystatechange=function(){a(t),n.onreadystatechange=null,e.removeChild(n),n=null},e.appendChild(n)}}():function(){c=function(e){setTimeout(a,0,e)}}(),d.setImmediate=r,d.clearImmediate=i}}("undefined"==typeof self?void 0===e?this:e:self)}).call(t,n(1),n(7))},function(e,t,n){function r(e,t){this._id=e,this._clearFn=t}var i=Function.prototype.apply;t.setTimeout=function(){return new r(i.call(setTimeout,window,arguments),clearTimeout)},t.setInterval=function(){return new r(i.call(setInterval,window,arguments),clearInterval)},t.clearTimeout=t.clearInterval=function(e){e&&e.close()},r.prototype.unref=r.prototype.ref=function(){},r.prototype.close=function(){this._clearFn.call(window,this._id)},t.enroll=function(e,t){clearTimeout(e._idleTimeoutId),e._idleTimeout=t},t.unenroll=function(e){clearTimeout(e._idleTimeoutId),e._idleTimeout=-1},t._unrefActive=t.active=function(e){clearTimeout(e._idleTimeoutId);var t=e._idleTimeout;t>=0&&(e._idleTimeoutId=setTimeout(function(){e._onTimeout&&e._onTimeout()},t))},n(9),t.setImmediate=setImmediate,t.clearImmediate=clearImmediate},function(e,t,n){e.exports=n(2)}]);module.exports=firebase;
 
 
-},{}],16:[function(require,module,exports){
+},{}],21:[function(require,module,exports){
 (function (global){
 /*! @license Firebase v3.9.0
 Build: rev-cc77c9e
@@ -36440,7 +37080,7 @@ c){if("create"===a)try{c.auth()}catch(d){}});firebase.INTERNAL.extendNamespace({
 }).call(typeof global !== undefined ? global : typeof self !== undefined ? self : typeof window !== undefined ? window : {});
 module.exports = firebase.auth;
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"./app":15}],17:[function(require,module,exports){
+},{"./app":20}],22:[function(require,module,exports){
 (function (global){
 /*! @license Firebase v3.9.0
 Build: rev-cc77c9e
@@ -36707,7 +37347,7 @@ d;return d.Ya},{Reference:U,Query:X,Database:Pg,enableLogging:Sb,INTERNAL:Z,TEST
 }).call(typeof global !== undefined ? global : typeof self !== undefined ? self : typeof window !== undefined ? window : {});
 module.exports = firebase.database;
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"./app":15}],18:[function(require,module,exports){
+},{"./app":20}],23:[function(require,module,exports){
 /*! @license Firebase v3.9.0
 Build: rev-cc77c9e
 Terms: https://firebase.google.com/terms/ */
@@ -36730,7 +37370,7 @@ exports.default = firebase;
 module.exports = exports['default'];
 
 
-},{"./app":15,"./auth":16,"./database":17,"./messaging":19,"./storage":20}],19:[function(require,module,exports){
+},{"./app":20,"./auth":21,"./database":22,"./messaging":24,"./storage":25}],24:[function(require,module,exports){
 (function (global){
 /*! @license Firebase v3.9.0
 Build: rev-cc77c9e
@@ -36775,7 +37415,7 @@ var U=function(a){"serviceWorker"in navigator&&navigator.serviceWorker.addEventL
 }).call(typeof global !== undefined ? global : typeof self !== undefined ? self : typeof window !== undefined ? window : {});
 module.exports = firebase.messaging;
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"./app":15}],20:[function(require,module,exports){
+},{"./app":20}],25:[function(require,module,exports){
 (function (global){
 /*! @license Firebase v3.9.0
 Build: rev-cc77c9e
@@ -36836,4 +37476,4 @@ Z(Q.prototype,"ref",Q.prototype.na);Ib.STATE_CHANGED="state_changed";P.RUNNING="
 }).call(typeof global !== undefined ? global : typeof self !== undefined ? self : typeof window !== undefined ? window : {});
 module.exports = firebase.storage;
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"./app":15}]},{},[9]);
+},{"./app":20}]},{},[13]);
