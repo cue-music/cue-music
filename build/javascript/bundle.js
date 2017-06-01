@@ -121,6 +121,25 @@ var config = {
 
 firebase.initializeApp(config);
 
+
+// Set up soundcloud
+SC.initialize({
+  client_id: '9cfb13e8afddd6b2ffcf8902b1dfe087&q=',
+  redirect_uri: window.location.href
+});
+
+
+SC.connect().then(function() {
+  return SC.get('/me');
+}).then(function(me) {
+  alert('Hello, ' + me.username);
+});
+
+// // stream track id 293
+// SC.stream('/tracks/293').then(function(player){
+//   player.play();
+// });
+
 // Setup Module
 var app = angular.module('app', ["firebase"]);
 
