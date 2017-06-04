@@ -8,7 +8,7 @@
           <h1 class="heading-2">Saved Playlists</h1><a class="button w-button" href="#" id="createNewButton" ng-click="vm.addPlaylist()">Create New</a>
         </div>
         <ul class="unordered-list w-list-unstyled">
-          <li class="list-item" ng-repeat="playlist in vm.playlists | orderBy : 'time'">
+          <li class="list-item" ng-repeat="playlist in vm.playlists | orderBy : 'time'" ng-click="vm.openPlaylist(playlist)">
             <div class="verticalalignflex w-clearfix">
               <div class="text-block-5"><strong class="playlistname">{{playlist.title}}</strong>
               </div>

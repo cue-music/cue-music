@@ -18,21 +18,6 @@ var config = {
 firebase.initializeApp(config);
 
 
-
-
-
-
-// SC.connect().then(function() {
-//   return SC.get('/me');
-// }).then(function(me) {
-//   alert('Hello, ' + me.username);
-// });
-
-// // stream track id 293
-// SC.stream('/tracks/293').then(function(player){
-//   player.play();
-// });
-
 // Setup Module
 var app = angular.module('app', ["firebase", "spotify"]);
 
@@ -80,12 +65,27 @@ app.controller("MainCtrl", ['$scope', '$rootScope', 'httpService', function ($sc
   }
 
 
-  $scope.playVideo = function () {
-    console.log("playing video")
-    player.playVideo();
-  }
-
-  $scope.pauseVideo = function() {
-    player.pauseVideo();
-  }
+  // TODO: Remove this
+  // $rootScope.currentPlaylist = {
+  //   "title": "My Playlist",
+  //   "time": 123466788,
+  //   "songs": [
+  //     {
+  //       artist: "V2RecordsNYC",
+  //       artwork: "https://i.ytimg.com/vi/kqLssKusGzM/default.jpg",
+  //       length: null,
+  //       source: "youtube",
+  //       source_id: "kqLssKusGzM",
+  //       title: "Josh Ritter - \"Girl In The War\""
+  //     },
+  //     {
+  //       artist: "Grace Davis",
+  //       artwork: "https://i1.sndcdn.com/artworks-000134001026-tugyco-large.jpg",
+  //       length: 300880,
+  //       source: "soundcloud",
+  //       source_id: 230155983,
+  //       title: "Hello - Adele"
+  //     }
+  //   ]
+  // };
 }]);

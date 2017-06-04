@@ -9,4 +9,10 @@ angular.module('app').controller("UserprofileController", ["$scope", "$rootScope
         });
     }
 
+
+    vm.openPlaylist = function(playlist) {
+        $rootScope.currrentPlaylist = playlist;
+        $rootScope.userProfile = false;
+    }
+
 }]);

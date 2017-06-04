@@ -54,9 +54,82 @@ angular.module('app').component('userprofileComponent', {
     });
 },{}],7:[function(require,module,exports){
 var firebase = require("firebase");
-angular.module('app').controller("PlayerController", [function () {
+angular.module('app').controller("PlayerController", ["$rootScope", function ($rootScope) {
     var vm = this
-    
+
+    $rootScope.isPaused = true;
+
+
+    vm.loadSong = function (index) {
+        // Stop other playing songs
+        yplayer.pauseVideo();
+        swidget.pause();
+
+        song = $rootScope.currentPlaylist.songs[index]
+
+        $rootScope.currentSong = song;
+        $rootScope.currentIndex = index;
+
+        if (song.source == "youtube") {
+            yplayer.loadVideoById(song.source_id);
+        } else {
+            var scUrl = "https://api.soundcloud.com/tracks/" + song.source_id
+            console.log(scUrl);
+            swidget.load(scUrl, {
+                callback: function () {
+                    swidget.play();
+                }
+            });
+        }
+
+        $rootScope.isPaused = false;
+    }
+
+
+    vm.toggleSong = function () {
+        if (!$rootScope.isPaused) {
+            swidget.pause();
+            yplayer.pauseVideo();
+
+            $rootScope.isPaused = true;
+        } else {
+            if ($rootScope.currentSong.source == "youtube") {
+                yplayer.playVideo();
+            } else {
+                swidget.play();
+            }
+            $rootScope.isPaused = false;
+        }
+
+    }
+
+
+    vm.getArtwork = function () {
+        try {
+            return $rootScope.currentSong.artwork;
+        } catch (e) {
+            return "images/C-Drop-Shawdow_1.png"
+        }
+    }
+
+    vm.nextSong = function() {
+        var nextIndex = $rootScope.currentIndex + 1;
+        if (nextIndex >= $rootScope.currentPlaylist.songs.length) {
+            nextIndex = 0;
+        }
+
+        vm.loadSong(nextIndex);
+    }
+
+    vm.previousSong = function() {
+        var prevIndex = $rootScope.currentIndex - 1;
+        if (prevIndex < 0) {
+            prevIndex = $rootScope.currentPlaylist.songs.length - 1;
+        }
+
+        vm.loadSong(prevIndex);
+    }
+
 }]);
 },{"firebase":23}],8:[function(require,module,exports){
 var firebase = require("firebase");
@@ -166,6 +239,12 @@ angular.module('app').controller("UserprofileController", ["$scope", "$rootScope
         });
     }
 
+
+    vm.openPlaylist = function(playlist) {
+        $rootScope.currrentPlaylist = playlist;
+        $rootScope.userProfile = false;
+    }
+
 }]);
 },{"firebase":23}],13:[function(require,module,exports){
 // External Libaries
@@ -187,21 +266,6 @@ var config = {
 
 firebase.initializeApp(config);
 
-
-
-
-
-
-// SC.connect().then(function() {
-//   return SC.get('/me');
-// }).then(function(me) {
-//   alert('Hello, ' + me.username);
-// });
-
-// // stream track id 293
-// SC.stream('/tracks/293').then(function(player){
-//   player.play();
-// });
 
 // Setup Module
 var app = angular.module('app', ["firebase", "spotify"]);
@@ -250,14 +314,29 @@ app.controller("MainCtrl", ['$scope', '$rootScope', 'httpService', function ($sc
   }
 
 
-  $scope.playVideo = function () {
-    console.log("playing video")
-    player.playVideo();
-  }
-
-  $scope.pauseVideo = function() {
-    player.pauseVideo();
-  }
+  // TODO: Remove this
+  // $rootScope.currentPlaylist = {
+  //   "title": "My Playlist",
+  //   "time": 123466788,
+  //   "songs": [
+  //     {
+  //       artist: "V2RecordsNYC",
+  //       artwork: "https://i.ytimg.com/vi/kqLssKusGzM/default.jpg",
+  //       length: null,
+  //       source: "youtube",
+  //       source_id: "kqLssKusGzM",
+  //       title: "Josh Ritter - \"Girl In The War\""
+  //     },
+  //     {
+  //       artist: "Grace Davis",
+  //       artwork: "https://i1.sndcdn.com/artworks-000134001026-tugyco-large.jpg",
+  //       length: 300880,
+  //       source: "soundcloud",
+  //       source_id: 230155983,
+  //       title: "Hello - Adele"
+  //     }
+  //   ]
+  // };
 }]);
 
 },{"./components/player-component.js":1,"./components/search-component.js":2,"./components/signin-component.js":3,"./components/smallplayer-component.js":4,"./components/test-component.js":5,"./components/userprofile-component.js":6,"./controllers/player-component-controller.js":7,"./controllers/search-component-controller.js":8,"./controllers/signin-component-controller.js":9,"./controllers/smallplayer-component-controller.js":10,"./controllers/test-component-controller.js":11,"./controllers/userprofile-component-controller.js":12,"./services/http-service.js":14,"angular":17,"angular-spotify":15,"angularfire":19,"firebase":23}],14:[function(require,module,exports){
@@ -273,6 +352,7 @@ angular.module("app").service('httpService', ['$http', function ($http) {
      */
     this.search = function (youtube, soundcloud, searchTerm) {
         var that = this;
+        console.log(searchTerm);
 
         return new Promise(function (resolve, reject) {
             youtubeDone = false;
