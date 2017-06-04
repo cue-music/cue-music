@@ -7,29 +7,29 @@ angular.module('app').controller("SearchController", ['$rootScope', 'httpService
     console.log($rootScope.currentPlaylist);
 
     vm.disName = vm.name;
-    vm.disUser = vm.user;
+    vm.user = vm.user;
 
-    if ($rootScope.isShared) {
-        sharedUser = $rootScope.sharedInfo["user"];
-        sharedPlaylist = $rootScope.sharedInfo["playlist"];
+    // if ($rootScope.isShared) {
+    //     sharedUser = $rootScope.sharedInfo["user"];
+    //     sharedPlaylist = $rootScope.sharedInfo["playlist"];
 
-        playlistRef = firebase.database().ref().child("users").child(sharedUser).child("playlists").child(sharedPlaylist);
-        playlist = $firebaseObject(playlistRef);
-        $rootScope.currentPlaylist = playlist;
+    //     playlistRef = firebase.database().ref().child("users").child(sharedUser).child("playlists").child(sharedPlaylist);
+    //     playlist = $firebaseObject(playlistRef);
+    //     $rootScope.currentPlaylist = playlist;
 
-        emailRef = firebase.database().ref().child("users").child(sharedUser).child('email');
-        email = $firebaseObject(emailRef);
-        email.$loaded().then(function () {
-            vm.disUser = {
-                uid: sharedUser,
-                email: email
-            };
+    //     emailRef = firebase.database().ref().child("users").child(sharedUser).child('email');
+    //     email = $firebaseObject(emailRef);
+    //     email.$loaded().then(function () {
+    //         vm.user = {
+    //             uid: sharedUser,
+    //             email: email
+    //         };
 
-            vm.disName = email.$value;
-            console.log(email.$value);
+    //         vm.disName = email.$value;
+    //         console.log(email.$value);
 
-        })
-    }
+    //     })
+    // }
 
     // Set up checkboxes
     vm.searchSoundcloud = true;
@@ -94,12 +94,13 @@ angular.module('app').controller("SearchController", ['$rootScope', 'httpService
 
 
     vm.loadSong = function (index) {
+        console.log("loading")
         // Stop other playing songs
         yplayer.pauseVideo();
         swidget.pause();
 
 
-        var songRef = firebase.database().ref().child("users").child(vm.disUser.uid).child("playlists").child(vm.playlist.$id).child("songs");
+        var songRef = firebase.database().ref().child("users").child(vm.user.uid).child("playlists").child($rootScope.currentPlaylistId).child("songs");
         var array = $firebaseArray(songRef);
         console.log(array);
         array.$loaded().then(function () {
@@ -159,7 +160,7 @@ angular.module('app').controller("SearchController", ['$rootScope', 'httpService
 
     vm.nextSong = function () {
         var nextIndex = $rootScope.currentIndex + 1;
-        if (nextIndex >= $rootScope.currentPlaylist.songs.length) {
+        if (nextIndex >= $rootScope.currentPlaylist.length) {
             nextIndex = 0;
         }
 
@@ -169,7 +170,7 @@ angular.module('app').controller("SearchController", ['$rootScope', 'httpService
     vm.previousSong = function () {
         var prevIndex = $rootScope.currentIndex - 1;
         if (prevIndex < 0) {
-            prevIndex = $rootScope.currentPlaylist.songs.length - 1;
+            prevIndex = $rootScope.currentPlaylist.length - 1;
         }
 
         vm.loadSong(prevIndex);
@@ -179,8 +180,8 @@ angular.module('app').controller("SearchController", ['$rootScope', 'httpService
 
     vm.showShare = false;
     vm.share = function () {
-        if (vm.disUser && vm.playlist) {
-            shareUrl = location.origin + "/?user=" + vm.disUser.uid + "&playlist=" + vm.playlist.$id;
+        if (vm.user && vm.playlist) {
+            shareUrl = location.origin + "/?user=" + vm.user.uid + "&playlist=" + vm.playlist.$id;
             return shareUrl;
         } else {
             return "Something went wrong!";

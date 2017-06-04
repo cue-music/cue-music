@@ -99,7 +99,7 @@
       </div>
       <div class="playlist-container">
         <div ng-class="{'playlist-item-container-selected': $root.currentIndex == $index}" class="playlist-item-container w-clearfix"
-          ng-repeat="song in $root.currentPlaylist" >
+          ng-repeat="song in $root.currentPlaylist" ng-click="loadSong($index)">
 
           <div class="p-order">{{$index + 1}}</div>
           <img class="three-dot-menu" sizes="34px" src="images/Artboard-1.png" srcset="images/Artboard-1-p-500.png 500w, images/Artboard-1.png 576w"
