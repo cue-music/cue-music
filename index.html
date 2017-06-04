@@ -72,7 +72,7 @@
   <!-- Header -->
   <div class="header nav-bar w-nav" data-animation="default" data-collapse="medium" data-durati>
     <div class="w-container">
-      <a class="brand w-nav-brand" href="#"><img sizes="(max-width: 479px) 85vw, 100px" src="images/Cue-Logo.png" srcset="images/Cue-Logo.png 500w, images/Cue-Logo.png 539w" width="100">
+      <a class="brand w-nav-brand" href="#" ng-click="$root.userProfile = true;"><img sizes="(max-width: 479px) 85vw, 100px" src="images/Cue-Logo.png" srcset="images/Cue-Logo.png 500w, images/Cue-Logo.png 539w" width="100">
       </a>
       <nav class="w-nav-menu" role="navigation"><a class="nav-links w-nav-link" href="#" id="signOff" ng-show="$root.loggedIn" ng-click="logOut()">Log Out</a><a class="nav-links w-nav-link"
           href="#" id="profileLink" ng-click="$root.userProfile = true;">My Profile</a>

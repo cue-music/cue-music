@@ -145,7 +145,7 @@ angular.module('app').controller("PlayerController", ["$rootScope", function ($r
 }]);
 },{"firebase":23}],8:[function(require,module,exports){
 var firebase = require("firebase");
-angular.module('app').controller("SearchController", ['$rootScope', 'httpService', '$firebaseArray', function ($rootScope, httpService, $firebaseArray) {
+angular.module('app').controller("SearchController", ['$rootScope', 'httpService', '$firebaseArray', '$firebaseObject', function ($rootScope, httpService, $firebaseArray, $firebaseObject) {
     var vm = this;
     vm.results = false;
     // Set up checkboxes
@@ -155,14 +155,12 @@ angular.module('app').controller("SearchController", ['$rootScope', 'httpService
         if (!vm.searchSoundcloud && !vm.searchYoutube) {
             alert("Please select at least one service to search.");
         } else {
-
             httpService.search(vm.searchYoutube, vm.searchSoundcloud, vm.searchTerm).then(
                 function (songs) {
                     vm.results = true;
                     console.log(songs);
                     vm.soundcloudResults = songs.soundcloud;
                     vm.youtubeResults = songs.youtube;
-
                 },
                 function (err) {
                     console.log(err);
@@ -177,11 +175,28 @@ angular.module('app').controller("SearchController", ['$rootScope', 'httpService
         return (seconds == 60 ? (minutes + 1) + ":00" : minutes + ":" + (seconds < 10 ? "0" : "") + seconds);
     }
 
+    vm.deleteSong = function (song) {
+        console.log(song.$id);
+        var countRef = firebase.database().ref().child("users").child(vm.user.uid).child("playlists").child($rootScope.currentPlaylistId);
+        var countObj = $firebaseObject(countRef);
+        countObj.$loaded().then(function () {
+            var newCount = countObj.songCount - 1;
+            firebase.database().ref().child("users").child(vm.user.uid).child("playlists").child($rootScope.currentPlaylistId).child("songCount").set(newCount);
+        });
+        firebase.database().ref().child("users").child(vm.user.uid).child("playlists").child($rootScope.currentPlaylistId).child("songs").child(song.$id).remove();
+    }
+
     vm.addSong = function (result) {
         var length = millisToMinutesAndSeconds(result.length);
-        var newCount = vm.playlist.songCount + 1;
-        firebase.database().ref().child("users").child(vm.user.uid).child("playlists").child(vm.playlist.$id).child("songCount").set(newCount);
-        firebase.database().ref().child("users").child(vm.user.uid).child("playlists").child(vm.playlist.$id).child("songs").push({
+        var countRef = firebase.database().ref().child("users").child(vm.user.uid).child("playlists").child($rootScope.currentPlaylistId);
+        var countObj = $firebaseObject(countRef);
+        countObj.$loaded().then(function () {
+            var newCount = countObj.songCount + 1;
+
+            firebase.database().ref().child("users").child(vm.user.uid).child("playlists").child($rootScope.currentPlaylistId).child("songCount").set(newCount);
+        });
+
+        firebase.database().ref().child("users").child(vm.user.uid).child("playlists").child($rootScope.currentPlaylistId).child("songs").push({
             title: result.title,
             length: length,
             artist: result.artist,
@@ -293,7 +308,7 @@ angular.module('app').controller("SigninController", ["$scope", "$rootScope", "S
             $rootScope.loggedIn = true;
             $rootScope.userProfile = true;
             var playlistRef = firebase.database().ref().child("users").child(userData.uid).child("playlists");
-		    $rootScope.userPlaylists = $firebaseArray(playlistRef);
+            $rootScope.userPlaylists = $firebaseArray(playlistRef);
         }).catch(function (error) {
             // Handle Errors here.
             var errorCode = error.code;
@@ -308,15 +323,22 @@ angular.module('app').controller("SigninController", ["$scope", "$rootScope", "S
                 //console.log("User " + userData.uid + " created successfully!");
                 user = firebase.auth().currentUser;
                 userIdNum = userData.uid;
-                var form = document.getElementById("email-form-2");
-                form.reset();
+                // var form = document.getElementById("email-form-2");
+                // form.reset();
                 firebase.database().ref().child("users").child(userData.uid).set({
-			      email: userData.email,
-                  playlists: 0
-			    });
-                $rootScope.user = userData;
-                $rootScope.loggedIn = true;
-                $rootScope.userProfile = true;
+                    email: userData.email,
+                    playlists: 0
+                });
+                firebase.auth().signOut().then(function () {
+                    console.log("log out");
+                    $rootScope.loggedIn = false;
+                    $scope.$digest();
+                }).catch(function (error) {
+                    // An error happened.
+                    console.log(error);
+                });
+                vm.showSignup = false;
+                alert("Please sign to your new account.");
             }).catch(function (error) {
                 var errorMessage = error.message;
                 console.log(errorMessage);
@@ -337,7 +359,7 @@ angular.module('app').controller("TestController", ["$scope", function($scope) {
 }]);
 },{}],12:[function(require,module,exports){
 var firebase = require("firebase");
-angular.module('app').controller("UserprofileController", ["$scope", "$rootScope", function ($scope, $rootScope) {
+angular.module('app').controller("UserprofileController", ["$scope", "$rootScope","$firebaseArray", function ($scope, $rootScope, $firebaseArray) {
     var vm = this
     vm.createNew = false;
     vm.addPlaylist = function() {
@@ -353,7 +375,9 @@ angular.module('app').controller("UserprofileController", ["$scope", "$rootScope
 
     vm.openPlaylist = function(playlist) {
         $rootScope.userProfile = false;
-        $rootScope.currentPlaylist = playlist; 
+        var plRef = firebase.database().ref().child("users").child($rootScope.user.uid).child("playlists").child(playlist.$id).child("songs");
+        $rootScope.currentPlaylist = $firebaseArray(plRef); 
+        $rootScope.currentPlaylistId = playlist.$id;
     }
 }]);
 },{"firebase":23}],13:[function(require,module,exports){

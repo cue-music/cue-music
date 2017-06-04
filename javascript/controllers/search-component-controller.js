@@ -1,5 +1,5 @@
 var firebase = require("firebase");
-angular.module('app').controller("SearchController", ['$rootScope', 'httpService', '$firebaseArray', function ($rootScope, httpService, $firebaseArray) {
+angular.module('app').controller("SearchController", ['$rootScope', 'httpService', '$firebaseArray', '$firebaseObject', function ($rootScope, httpService, $firebaseArray, $firebaseObject) {
     var vm = this;
     vm.results = false;
     // Set up checkboxes
@@ -9,14 +9,12 @@ angular.module('app').controller("SearchController", ['$rootScope', 'httpService
         if (!vm.searchSoundcloud && !vm.searchYoutube) {
             alert("Please select at least one service to search.");
         } else {
-
             httpService.search(vm.searchYoutube, vm.searchSoundcloud, vm.searchTerm).then(
                 function (songs) {
                     vm.results = true;
                     console.log(songs);
                     vm.soundcloudResults = songs.soundcloud;
                     vm.youtubeResults = songs.youtube;
-
                 },
                 function (err) {
                     console.log(err);
@@ -31,11 +29,28 @@ angular.module('app').controller("SearchController", ['$rootScope', 'httpService
         return (seconds == 60 ? (minutes + 1) + ":00" : minutes + ":" + (seconds < 10 ? "0" : "") + seconds);
     }
 
+    vm.deleteSong = function (song) {
+        console.log(song.$id);
+        var countRef = firebase.database().ref().child("users").child(vm.user.uid).child("playlists").child($rootScope.currentPlaylistId);
+        var countObj = $firebaseObject(countRef);
+        countObj.$loaded().then(function () {
+            var newCount = countObj.songCount - 1;
+            firebase.database().ref().child("users").child(vm.user.uid).child("playlists").child($rootScope.currentPlaylistId).child("songCount").set(newCount);
+        });
+        firebase.database().ref().child("users").child(vm.user.uid).child("playlists").child($rootScope.currentPlaylistId).child("songs").child(song.$id).remove();
+    }
+
     vm.addSong = function (result) {
         var length = millisToMinutesAndSeconds(result.length);
-        var newCount = vm.playlist.songCount + 1;
-        firebase.database().ref().child("users").child(vm.user.uid).child("playlists").child(vm.playlist.$id).child("songCount").set(newCount);
-        firebase.database().ref().child("users").child(vm.user.uid).child("playlists").child(vm.playlist.$id).child("songs").push({
+        var countRef = firebase.database().ref().child("users").child(vm.user.uid).child("playlists").child($rootScope.currentPlaylistId);
+        var countObj = $firebaseObject(countRef);
+        countObj.$loaded().then(function () {
+            var newCount = countObj.songCount + 1;
+
+            firebase.database().ref().child("users").child(vm.user.uid).child("playlists").child($rootScope.currentPlaylistId).child("songCount").set(newCount);
+        });
+
+        firebase.database().ref().child("users").child(vm.user.uid).child("playlists").child($rootScope.currentPlaylistId).child("songs").push({
             title: result.title,
             length: length,
             artist: result.artist,
