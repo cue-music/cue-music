@@ -217,11 +217,6 @@ angular.module('app').controller("SearchController", ['$rootScope', 'httpService
 
     vm.addSong = function (result) {
         var length = millisToMinutesAndSeconds(result.length);
-<<<<<<< HEAD
-        var newCount = vm.playlist.songCount + 1;
-        firebase.database().ref().child("users").child(vm.disUser.uid).child("playlists").child(vm.playlist.$id).child("songCount").set(newCount);
-        firebase.database().ref().child("users").child(vm.disUser.uid).child("playlists").child(vm.playlist.$id).child("songs").push({
-=======
         var countRef = firebase.database().ref().child("users").child(vm.user.uid).child("playlists").child($rootScope.currentPlaylistId);
         var countObj = $firebaseObject(countRef);
         countObj.$loaded().then(function () {
@@ -231,7 +226,6 @@ angular.module('app').controller("SearchController", ['$rootScope', 'httpService
         });
 
         firebase.database().ref().child("users").child(vm.user.uid).child("playlists").child($rootScope.currentPlaylistId).child("songs").push({
->>>>>>> 2f7426bff5bcce71c71ad0a93366d9d87b7fba4b
             title: result.title,
             length: length,
             artist: result.artist,
@@ -356,11 +350,8 @@ angular.module('app').controller("SigninController", ["$scope", "$rootScope", "S
             $rootScope.userProfile = true;
             var playlistRef = firebase.database().ref().child("users").child(userData.uid).child("playlists");
             $rootScope.userPlaylists = $firebaseArray(playlistRef);
-<<<<<<< HEAD
 
             vm.checkShared();
-=======
->>>>>>> 2f7426bff5bcce71c71ad0a93366d9d87b7fba4b
         }).catch(function (error) {
             // Handle Errors here.
             var errorCode = error.code;
@@ -381,12 +372,7 @@ angular.module('app').controller("SigninController", ["$scope", "$rootScope", "S
                     email: userData.email,
                     playlists: 0
                 });
-<<<<<<< HEAD
-                $rootScope.user = userData;
-                $rootScope.loggedIn = true;
-                $rootScope.userProfile = true;
-=======
-                firebase.auth().signOut().then(function () {
+               firebase.auth().signOut().then(function () {
                     console.log("log out");
                     $rootScope.loggedIn = false;
                     $scope.$digest();
@@ -396,7 +382,6 @@ angular.module('app').controller("SigninController", ["$scope", "$rootScope", "S
                 });
                 vm.showSignup = false;
                 alert("Please sign to your new account.");
->>>>>>> 2f7426bff5bcce71c71ad0a93366d9d87b7fba4b
             }).catch(function (error) {
                 var errorMessage = error.message;
                 console.log(errorMessage);
