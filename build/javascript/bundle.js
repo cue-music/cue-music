@@ -11,7 +11,12 @@ angular.module('app').component('playerComponent', {
 angular.module('app').component('searchComponent', {
         templateUrl: './templates/searchComponent.html',
         controllerAs: 'vm',
-        controller: "SearchController"
+        controller: "SearchController",
+        bindings: {
+            playlist: "=",
+            name: "=",
+            user: "="
+        }
     });
 },{}],3:[function(require,module,exports){
 angular.module('app').component('signinComponent', {
@@ -62,25 +67,45 @@ angular.module('app').controller("PlayerController", [function () {
 var firebase = require("firebase");
 angular.module('app').controller("SearchController", ['httpService', function (httpService) {
     var vm = this;
-
+    vm.results = false;
     // Set up checkboxes
     vm.searchSoundcloud = true;
     vm.searchYoutube = true;
-
-
     vm.search = function () {
         if (!vm.searchSoundcloud && !vm.searchYoutube) {
             alert("Please select at least one service to search.");
         } else {
+            
             httpService.search(vm.searchYoutube, vm.searchSoundcloud, vm.searchTerm).then(
-                function(songs) {
+                function (songs) {
+                    vm.results = true;
                     console.log(songs);
+                    vm.soundcloudResults = songs.soundcloud;
+                    vm.youtubeResults = songs.youtube;
+
                 },
-                function(err) {
+                function (err) {
                     console.log(err);
                 }
             )
         }
+    }
+
+    function millisToMinutesAndSeconds(millis) {
+        var minutes = Math.floor(millis / 60000);
+        var seconds = ((millis % 60000) / 1000).toFixed(0);
+        return (seconds == 60 ? (minutes+1) + ":00" : minutes + ":" + (seconds < 10 ? "0" : "") + seconds);
+    }
+
+    vm.addSong = function (result) {
+        var length = millisToMinutesAndSeconds(result.length);
+        var newCount = vm.playlist.songCount + 1;
+        firebase.database().ref().child("users").child(vm.user.uid).child("playlists").child(vm.playlist.$id).child("songCount").set(newCount);
+        firebase.database().ref().child("users").child(vm.user.uid).child("playlists").child(vm.playlist.$id).child("songs").push({
+            title: result.title,
+            length: length,
+            artist: result.artist
+        });
     }
 }]);
 },{"firebase":23}],9:[function(require,module,exports){
@@ -162,10 +187,15 @@ angular.module('app').controller("UserprofileController", ["$scope", "$rootScope
         firebase.database().ref().child("users").child($rootScope.user.uid).child("playlists").push({
             title: "A Playlist",
             songs: 0,
+            songCount: 0,
             time: firebase.database.ServerValue.TIMESTAMP
         });
     }
 
+    vm.chosePlaylist = function(playlist) {
+        $rootScope.userProfile = false;
+        $rootScope.currentPlaylist = playlist; 
+    }
 }]);
 },{"firebase":23}],13:[function(require,module,exports){
 // External Libaries
@@ -236,6 +266,7 @@ app.controller("MainCtrl", ['$scope', '$rootScope', 'httpService', function ($sc
   $scope.name = "Alex";
   $rootScope.loggedIn = false;
   $rootScope.userProfile = false;
+  $rootScope.currentPlaylist = false;
 
   console.log("main ctrl loaded");
   $scope.logOut = function () {

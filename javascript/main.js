@@ -66,6 +66,7 @@ app.controller("MainCtrl", ['$scope', '$rootScope', 'httpService', function ($sc
   $scope.name = "Alex";
   $rootScope.loggedIn = false;
   $rootScope.userProfile = false;
+  $rootScope.currentPlaylist = false;
 
   console.log("main ctrl loaded");
   $scope.logOut = function () {
