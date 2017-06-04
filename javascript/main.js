@@ -66,26 +66,26 @@ app.controller("MainCtrl", ['$scope', '$rootScope', 'httpService', function ($sc
 
 
   // TODO: Remove this
-  // $rootScope.currentPlaylist = {
-  //   "title": "My Playlist",
-  //   "time": 123466788,
-  //   "songs": [
-  //     {
-  //       artist: "V2RecordsNYC",
-  //       artwork: "https://i.ytimg.com/vi/kqLssKusGzM/default.jpg",
-  //       length: null,
-  //       source: "youtube",
-  //       source_id: "kqLssKusGzM",
-  //       title: "Josh Ritter - \"Girl In The War\""
-  //     },
-  //     {
-  //       artist: "Grace Davis",
-  //       artwork: "https://i1.sndcdn.com/artworks-000134001026-tugyco-large.jpg",
-  //       length: 300880,
-  //       source: "soundcloud",
-  //       source_id: 230155983,
-  //       title: "Hello - Adele"
-  //     }
-  //   ]
-  // };
+  $rootScope.currentPlaylist = {
+    "title": "My Playlist",
+    "time": 123466788,
+    "songs": [
+      {
+        artist: "V2RecordsNYC",
+        artwork: "https://i.ytimg.com/vi/kqLssKusGzM/default.jpg",
+        length: null,
+        source: "youtube",
+        source_id: "kqLssKusGzM",
+        title: "Josh Ritter - \"Girl In The War\""
+      },
+      {
+        artist: "Grace Davis",
+        artwork: "https://i1.sndcdn.com/artworks-000134001026-tugyco-large.jpg",
+        length: 300880,
+        source: "soundcloud",
+        source_id: 230155983,
+        title: "Hello - Adele"
+      }
+    ]
+  };
 }]);

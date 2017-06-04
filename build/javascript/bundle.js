@@ -315,28 +315,28 @@ app.controller("MainCtrl", ['$scope', '$rootScope', 'httpService', function ($sc
 
 
   // TODO: Remove this
-  // $rootScope.currentPlaylist = {
-  //   "title": "My Playlist",
-  //   "time": 123466788,
-  //   "songs": [
-  //     {
-  //       artist: "V2RecordsNYC",
-  //       artwork: "https://i.ytimg.com/vi/kqLssKusGzM/default.jpg",
-  //       length: null,
-  //       source: "youtube",
-  //       source_id: "kqLssKusGzM",
-  //       title: "Josh Ritter - \"Girl In The War\""
-  //     },
-  //     {
-  //       artist: "Grace Davis",
-  //       artwork: "https://i1.sndcdn.com/artworks-000134001026-tugyco-large.jpg",
-  //       length: 300880,
-  //       source: "soundcloud",
-  //       source_id: 230155983,
-  //       title: "Hello - Adele"
-  //     }
-  //   ]
-  // };
+  $rootScope.currentPlaylist = {
+    "title": "My Playlist",
+    "time": 123466788,
+    "songs": [
+      {
+        artist: "V2RecordsNYC",
+        artwork: "https://i.ytimg.com/vi/kqLssKusGzM/default.jpg",
+        length: null,
+        source: "youtube",
+        source_id: "kqLssKusGzM",
+        title: "Josh Ritter - \"Girl In The War\""
+      },
+      {
+        artist: "Grace Davis",
+        artwork: "https://i1.sndcdn.com/artworks-000134001026-tugyco-large.jpg",
+        length: 300880,
+        source: "soundcloud",
+        source_id: 230155983,
+        title: "Hello - Adele"
+      }
+    ]
+  };
 }]);
 
 },{"./components/player-component.js":1,"./components/search-component.js":2,"./components/signin-component.js":3,"./components/smallplayer-component.js":4,"./components/test-component.js":5,"./components/userprofile-component.js":6,"./controllers/player-component-controller.js":7,"./controllers/search-component-controller.js":8,"./controllers/signin-component-controller.js":9,"./controllers/smallplayer-component-controller.js":10,"./controllers/test-component-controller.js":11,"./controllers/userprofile-component-controller.js":12,"./services/http-service.js":14,"angular":17,"angular-spotify":15,"angularfire":19,"firebase":23}],14:[function(require,module,exports){
