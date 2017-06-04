@@ -290,8 +290,6 @@ angular.module('app').controller("SigninController", ["$scope", "$rootScope", "S
             var form = document.getElementById("email-form");
             form.reset();
             $rootScope.user = userData;
-            //console.log(userData);
-            vm.login();
             $rootScope.loggedIn = true;
             $rootScope.userProfile = true;
             var playlistRef = firebase.database().ref().child("users").child(userData.uid).child("playlists");
@@ -317,7 +315,6 @@ angular.module('app').controller("SigninController", ["$scope", "$rootScope", "S
                   playlists: 0
 			    });
                 $rootScope.user = userData;
-                vm.login();
                 $rootScope.loggedIn = true;
                 $rootScope.userProfile = true;
             }).catch(function (error) {
@@ -325,17 +322,6 @@ angular.module('app').controller("SigninController", ["$scope", "$rootScope", "S
                 console.log(errorMessage);
             });
         }
-    }
-
-    //login user with spotify
-    vm.login = function () {
-        Spotify.login(true).then(function (data) {
-            Spotify.getCurrentUser().then(function (user) {
-                //vm.username = user.id;
-                //console.log("vm.username");
-                //console.log(user);
-            });
-        });
     }
 
 }]);
