@@ -6,6 +6,8 @@ angular.module('app').controller("PlayerController", ["$rootScope", function ($r
 
 
     vm.loadSong = function (index) {
+        console.log("loading song: " + index);
+
         // Stop other playing songs
         yplayer.pauseVideo();
         swidget.pause();
@@ -28,6 +30,11 @@ angular.module('app').controller("PlayerController", ["$rootScope", function ($r
         }
 
         $rootScope.isPaused = false;
+    }
+
+
+    vm.test = function() {
+        console.log(test);
     }
 
 

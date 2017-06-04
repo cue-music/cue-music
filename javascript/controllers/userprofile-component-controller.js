@@ -10,7 +10,7 @@ angular.module('app').controller("UserprofileController", ["$scope", "$rootScope
         });
     }
 
-    vm.chosePlaylist = function(playlist) {
+    vm.openPlaylist = function(playlist) {
         $rootScope.userProfile = false;
         $rootScope.currentPlaylist = playlist; 
     }

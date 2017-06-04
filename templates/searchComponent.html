@@ -1,104 +1,111 @@
 <!-- Search Bar and Filters -->
-  <div class="search-container w-form">
-    <form data-name="Search-Bar" id="wf-form-Search-Bar" name="wf-form-Search-Bar" ng-submit="vm.search()">
-      <div class="w-row">
-        <div class="w-col w-col-10">
-          <div class="search-box w-clearfix">
-            <input class="text-field w-input" data-name="search" id="search" maxlength="256" name="search" placeholder="Search artist, track, or album"
-              type="text" ng-model="vm.searchTerm">
-            <input class="search-submit w-button" type="submit" value="Search">
-          </div>
-        </div>
-        <div class="w-col w-col-2">
-          <div class="w-checkbox w-clearfix">
-            <input ng-model="vm.searchSoundcloud" checked="checked" class="w-checkbox-input" data-name="soundcloud" id="soundcloud" name="soundcloud" type="checkbox">
-            <label class="search-filters w-form-label" for="soundcloud">SoundCloud</label>
-          </div>
-          <div class="checkbox-field w-checkbox w-clearfix">
-            <input ng-model="vm.searchYoutube" class="w-checkbox-input" data-name="spotify" id="spotify" name="spotify" type="checkbox">
-            <label class="search-filters w-form-label" for="spotify">Youtube</label>
-          </div>
+<div class="search-container w-form">
+  <form data-name="Search-Bar" id="wf-form-Search-Bar" name="wf-form-Search-Bar" ng-submit="vm.search()">
+    <div class="w-row">
+      <div class="w-col w-col-10">
+        <div class="search-box w-clearfix">
+          <input class="text-field w-input" data-name="search" id="search" maxlength="256" name="search" placeholder="Search artist, track, or album"
+            type="text" ng-model="vm.searchTerm">
+          <input class="search-submit w-button" type="submit" value="Search">
         </div>
       </div>
-    </form>
-    <div class="w-form-done">
-      <div>Thank you! Your submission has been received!</div>
-    </div>
-    <div class="w-form-fail">
-      <div>Oops! Something went wrong while submitting the form</div>
-    </div>
-  </div>
-
-  <div class="main-section">
-    <div class="row w-row" >
-        <div class="mediaplayer w-col w-col-7" >
-
-  <!-- Search Results Component -->
-  <div>{{vm.results}}</div>
-<div class="search-results" ng-show="vm.results"><img class="backtoplayer" src="images/back.png" width="24">
-  <h2 class="heading-7">Search Results</h2>
-  <div class="search-service-container">
-    <h4 class="heading-6">SoundCloud</h4>
-    <div class="search-result-container w-clearfix" ng-repeat="result in vm.soundcloudResults"><img class="search-result-art" src="{{result.artwork}}" width="61"><img class="add-track-button" data-ix="scale" src="images/plus-icon.png" width="26" ng-click="vm.addSong(result);" style="cursor: pointer;">
-      <div class="sr-info">
-        <p class="sr-title"><strong>{{result.title}}</strong>
-        </p>
-        <p class="sr-artist">{{result.artist}}</p>
-        <p class="sr-album">Album</p>
+      <div class="w-col w-col-2">
+        <div class="w-checkbox w-clearfix">
+          <input ng-model="vm.searchSoundcloud" checked="checked" class="w-checkbox-input" data-name="soundcloud" id="soundcloud" name="soundcloud"
+            type="checkbox">
+          <label class="search-filters w-form-label" for="soundcloud">SoundCloud</label>
+        </div>
+        <div class="checkbox-field w-checkbox w-clearfix">
+          <input ng-model="vm.searchYoutube" class="w-checkbox-input" data-name="spotify" id="spotify" name="spotify" type="checkbox">
+          <label class="search-filters w-form-label" for="spotify">Youtube</label>
+        </div>
       </div>
     </div>
+  </form>
+  <div class="w-form-done">
+    <div>Thank you! Your submission has been received!</div>
   </div>
-  <div class="search-service-container">
-    <h4 class="search-headings">Youtube</h4>
-    <div class="search-result-container w-clearfix" ng-repeat="result in vm.youtubeResults"><img class="search-result-art" src="{{result.artwork}}" width="61"><img class="add-track-button" data-ix="scale" src="images/plus-icon.png" width="26" ng-click="vm.addSong(result);" style="cursor: pointer;">
-      <div class="sr-info">
-        <p class="sr-title"><strong>{{result.title}}</strong>
-        </p>
-        <p class="sr-artist">{{result.artist}}</p>
-        <p class="sr-album">Album</p>
-      </div>
-    </div>
+  <div class="w-form-fail">
+    <div>Oops! Something went wrong while submitting the form</div>
   </div>
 </div>
-<!-- Player Section -->
 
-            <div class="track-art-container" ng-show="!vm.results">
-                <div class="media-control-container">
-                    <div class="media-player-controls w-row">
-                        <div class="w-col w-col-4 w-col-small-4 w-col-tiny-4"><img class="media-control-button grow" id="media-back" src="images/back_pressed.png"
-                                width="50">
-                        </div>
-                        <div class="w-col w-col-4 w-col-small-4 w-col-tiny-4"><img class="media-control-button grow" id="media-pause" src="images/Pause.png" width="39">
-                        </div>
-                        <div class="w-col w-col-4 w-col-small-4 w-col-tiny-4"><img class="media-control-button grow" id="media-skip" src="images/forward_pressed.png"
-                                width="50">
-                        </div>
-                    </div>
-                </div><img class="large-track-art" id="large-track-art" src="images/C-Drop-Shawdow_1.png" width="420">
+<div class="main-section">
+  <div class="row w-row">
+    <div class="mediaplayer w-col w-col-7">
+
+      <!-- Search Results Component -->
+      <div class="search-results" ng-show="vm.results"><img class="backtoplayer" src="images/back.png" width="24">
+        <h2 class="heading-7">Search Results</h2>
+        <div class="search-service-container">
+          <h4 class="heading-6">SoundCloud</h4>
+          <div class="search-result-container w-clearfix" ng-repeat="result in vm.soundcloudResults"><img class="search-result-art" src="{{result.artwork}}" width="61"><img class="add-track-button" data-ix="scale"
+              src="images/plus-icon.png" width="26" ng-click="vm.addSong(result);" style="cursor: pointer;">
+            <div class="sr-info">
+              <p class="sr-title"><strong>{{result.title}}</strong>
+              </p>
+              <p class="sr-artist">{{result.artist}}</p>
+              <p class="sr-album">Album</p>
             </div>
+          </div>
         </div>
-        <div class="main-column w-col w-col-5">
-            <div class="share-button-container w-clearfix">
-                <div class="custom-button" id="share-button">Share</div>
+        <div class="search-service-container">
+          <h4 class="search-headings">Youtube</h4>
+          <div class="search-result-container w-clearfix" ng-repeat="result in vm.youtubeResults"><img class="search-result-art" src="{{result.artwork}}" width="61"><img class="add-track-button" data-ix="scale"
+              src="images/plus-icon.png" width="26" ng-click="vm.addSong(result);" style="cursor: pointer;">
+            <div class="sr-info">
+              <p class="sr-title"><strong>{{result.title}}</strong>
+              </p>
+              <p class="sr-artist">{{result.artist}}</p>
+              <p class="sr-album">Album</p>
             </div>
-            <div class="playlst-info-container w-container">
-                <h4 class="heading" id="playlist-title">{{vm.playlist.title}}</h4>
-                <div class="text-block" id="username">Created by {{vm.name.split("@")[0]}}</div>
-            </div>
-            <div class="playlist-container">
-                <div class="playlist-item-container w-clearfix" ng-repeat="song in vm.playlist.songs">
-                    <div class="p-order">{{$index + 1}}</div><img class="three-dot-menu" sizes="34px" src="images/Artboard-1.png" srcset="images/Artboard-1-p-500.png 500w, images/Artboard-1.png 576w"
-                        width="34"><img class="playlist-item-image w-hidden-medium w-hidden-small w-hidden-tiny" sizes="(max-width: 767px) 100vw, 34px"
-                        src="images/C-Drop-Shawdow.png" srcset="images/C-Drop-Shawdow-p-500.png 500w, images/C-Drop-Shawdow.png 576w"
-                        width="30">
-                        
-                    <p class="track-duration">{{song.length}}</p>
-                    <div class="playlist-item-info">
-                        <h6 class="track-title">{{song.title}}</h6>
-                        <div class="artist">{{song.artist}}</div>
-                    </div>
-                </div>
-            </div>
+          </div>
         </div>
+      </div>
+      <!-- Player Section -->
+
+      <div class="track-art-container">
+        <div class="media-control-container">
+          <div class="media-player-controls w-row">
+            <div ng-click="vm.previousSong()" class="w-col w-col-4 w-col-small-4 w-col-tiny-4">
+              <img class="media-control-button grow" id="media-back" src="images/back_pressed.png" width="50">
+            </div>
+            <div ng-click="vm.toggleSong()" class="w-col w-col-4 w-col-small-4 w-col-tiny-4">
+              <img ng-hide="!$root.isPaused" class="media-control-button grow" id="media-play" src="images/play.png" width="39">
+              <img ng-hide="$root.isPaused" class="media-control-button grow" id="media-pause" src="images/Pause.png" width="39">
+            </div>
+            <div ng-click="vm.nextSong()" class="w-col w-col-4 w-col-small-4 w-col-tiny-4">
+              <img class="media-control-button grow" id="media-skip" src="images/forward_pressed.png" width="50">
+            </div>
+          </div>
+        </div><img class="large-track-art" id="large-track-art" src="{{vm.getArtwork($root.currentSong)}}" width="420">
+      </div>
     </div>
+    <div class="main-column w-col w-col-5">
+      <div class="share-button-container w-clearfix">
+        <div class="custom-button" id="share-button">Share</div>
+      </div>
+      <div class="playlst-info-container w-container">
+        <h4 class="heading" id="playlist-title">{{vm.playlist.title}}</h4>
+        <div class="text-block" id="username">Created by {{vm.name.split("@")[0]}}</div>
+      </div>
+      <div class="playlist-container">
+        <div ng-class="{'playlist-item-container-selected': $root.currentIndex == $index}" class="playlist-item-container w-clearfix"
+          ng-repeat="song in $root.currentPlaylist.songs" ng-click="vm.loadSong($index)">
+
+          <div class="p-order">{{$index + 1}}</div>
+          <img class="three-dot-menu" sizes="34px" src="images/Artboard-1.png" srcset="images/Artboard-1-p-500.png 500w, images/Artboard-1.png 576w"
+            width="34">
+          <img class="playlist-item-image w-hidden-medium w-hidden-small w-hidden-tiny" sizes="(max-width: 767px) 100vw, 34px" src="{{vm.getArtwork(song)}}"
+            width="30">
+
+          <p class="track-duration">{{song.length}}</p>
+          <div class="playlist-item-info">
+            <h6 class="track-title">{{song.title}}</h6>
+            <div class="artist">{{song.artist}}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
