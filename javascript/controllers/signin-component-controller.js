@@ -29,15 +29,22 @@ angular.module('app').controller("SigninController", ["$scope", "$rootScope", "S
                 //console.log("User " + userData.uid + " created successfully!");
                 user = firebase.auth().currentUser;
                 userIdNum = userData.uid;
-                var form = document.getElementById("email-form-2");
-                form.reset();
+                // var form = document.getElementById("email-form-2");
+                // form.reset();
                 firebase.database().ref().child("users").child(userData.uid).set({
                     email: userData.email,
                     playlists: 0
                 });
-                $rootScope.user = userData;
-                $rootScope.loggedIn = true;
-                $rootScope.userProfile = true;
+               firebase.auth().signOut().then(function () {
+                    console.log("log out");
+                    $rootScope.loggedIn = false;
+                    $scope.$digest();
+                }).catch(function (error) {
+                    // An error happened.
+                    console.log(error);
+                });
+                vm.showSignup = false;
+                alert("Please sign to your new account.");
             }).catch(function (error) {
                 var errorMessage = error.message;
                 console.log(errorMessage);
