@@ -9,16 +9,15 @@
 }
 
 .createNewPlaylist {
+  top: 100px;
+
   position: absolute;
-  left: 0px;
-  top: 140px;
-  right: 0px;
-  z-index: auto;
-  display: block;
-  width: 40%;
-  height: 30%;
-  margin-right: auto;
   margin-left: auto;
+  margin-right: auto;
+  left: 0;
+  right: 250px;
+  width: 500px;
+  height: 200px;
   background-color: black;
   padding: 10px;
   color: white;
@@ -35,9 +34,6 @@
   background: #3898EC;
 }
 
-#newPlaylistCancel {
-  /*background: blue;*/
-}
 
 #playlistNameInput {
   box-sizing: border-box;
@@ -53,6 +49,19 @@
   margin-bottom: 10px;
   font: 16px Arial, Helvetica, sans-serif;
   height: 45px;
+}
+
+#createPlaylistForm {
+  position: relative;
+}
+
+.playlist-item-info {
+  margin-top: 5px;
+}
+
+#signupButton {
+  max-width: 80px;
+  text-align: center;
 }
 
 /* Webflow Generated CSS */

@@ -12,7 +12,7 @@ angular.module('app').controller("SigninController", ["$scope", "$rootScope", "S
             $rootScope.loggedIn = true;
             $rootScope.userProfile = true;
             var playlistRef = firebase.database().ref().child("users").child(userData.uid).child("playlists");
-		    $rootScope.userPlaylists = $firebaseArray(playlistRef);
+            $rootScope.userPlaylists = $firebaseArray(playlistRef);
 
             vm.checkShared();
         }).catch(function (error) {
@@ -32,9 +32,9 @@ angular.module('app').controller("SigninController", ["$scope", "$rootScope", "S
                 var form = document.getElementById("email-form-2");
                 form.reset();
                 firebase.database().ref().child("users").child(userData.uid).set({
-			      email: userData.email,
-                  playlists: 0
-			    });
+                    email: userData.email,
+                    playlists: 0
+                });
                 $rootScope.user = userData;
                 $rootScope.loggedIn = true;
                 $rootScope.userProfile = true;
@@ -45,7 +45,7 @@ angular.module('app').controller("SigninController", ["$scope", "$rootScope", "S
         }
     }
 
-    vm.checkShared = function() {
+    vm.checkShared = function () {
         var paramString = location.search.substring(1);
         var paramArray = paramString.split("&");
 
@@ -64,4 +64,4 @@ angular.module('app').controller("SigninController", ["$scope", "$rootScope", "S
         }
 
     }
-    }]);
+}]);
