@@ -5,14 +5,13 @@ angular.module('app').controller("UserprofileController", ["$scope", "$rootScope
         firebase.database().ref().child("users").child($rootScope.user.uid).child("playlists").push({
             title: "A Playlist",
             songs: 0,
+            songCount: 0,
             time: firebase.database.ServerValue.TIMESTAMP
         });
     }
 
-
-    vm.openPlaylist = function(playlist) {
-        $rootScope.currrentPlaylist = playlist;
+    vm.chosePlaylist = function(playlist) {
         $rootScope.userProfile = false;
+        $rootScope.currentPlaylist = playlist; 
     }
-
 }]);
