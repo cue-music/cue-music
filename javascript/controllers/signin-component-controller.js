@@ -1,6 +1,6 @@
 var firebase = require("firebase");
 //var Spotify = require("angular-spotify");
-angular.module('app').controller("SigninController", ["$scope", "$rootScope", "Spotify", "$firebaseArray", function ($scope, $rootScope, Spotify, $firebaseArray) {
+angular.module('app').controller("SigninController", ["$scope", "$rootScope", "Spotify", "$firebaseArray", "$routeParams", function ($scope, $rootScope, Spotify, $firebaseArray, $routeParams) {
     var vm = this
     vm.showSignup = false;
     vm.signin = function () {
@@ -9,12 +9,12 @@ angular.module('app').controller("SigninController", ["$scope", "$rootScope", "S
             var form = document.getElementById("email-form");
             form.reset();
             $rootScope.user = userData;
-            //console.log(userData);
-            vm.login();
             $rootScope.loggedIn = true;
             $rootScope.userProfile = true;
             var playlistRef = firebase.database().ref().child("users").child(userData.uid).child("playlists");
 		    $rootScope.userPlaylists = $firebaseArray(playlistRef);
+
+            vm.checkShared();
         }).catch(function (error) {
             // Handle Errors here.
             var errorCode = error.code;
@@ -36,7 +36,6 @@ angular.module('app').controller("SigninController", ["$scope", "$rootScope", "S
                   playlists: 0
 			    });
                 $rootScope.user = userData;
-                vm.login();
                 $rootScope.loggedIn = true;
                 $rootScope.userProfile = true;
             }).catch(function (error) {
@@ -46,15 +45,23 @@ angular.module('app').controller("SigninController", ["$scope", "$rootScope", "S
         }
     }
 
-    //login user with spotify
-    vm.login = function () {
-        Spotify.login(true).then(function (data) {
-            Spotify.getCurrentUser().then(function (user) {
-                //vm.username = user.id;
-                //console.log("vm.username");
-                //console.log(user);
-            });
-        });
-    }
+    vm.checkShared = function() {
+        var paramString = location.search.substring(1);
+        var paramArray = paramString.split("&");
 
-}]);
+        paramObject = {};
+        for (var i = 0; i < paramArray.length; i++) {
+            var qArr = paramArray[i].split("=");
+            key = qArr[0];
+            val = qArr[1];
+            paramObject[key] = val;
+        }
+
+        if (paramObject["user"] && paramObject["playlist"]) {
+            $rootScope.userProfile = false;
+            $rootScope.isShared = true;
+            $rootScope.sharedInfo = paramObject;
+        }
+
+    }
+    }]);

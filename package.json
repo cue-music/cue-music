@@ -29,6 +29,7 @@
   },
   "dependencies": {
     "angular": "^1.5.8",
+    "angular-route": "^1.6.4",
     "angular-spotify": "^1.4.3",
     "angularfire": "^2.3.0",
     "firebase": "^3.9.0"

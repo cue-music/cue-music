@@ -84,7 +84,7 @@
   </div>
  
   <!-- Search Bar and Filters -->
-  <search-component ng-show="$root.loggedIn && !$root.userProfile" playlist="$root.currentPlaylist" name="$root.user.email" user="$root.user"></search-component>
+  <search-component ng-if="$root.loggedIn && !$root.userProfile" playlist="$root.currentPlaylist" name="$root.user.email" user="$root.user"></search-component>
 
   <!-- Player Section -->
   <!--<player-component ng-show="$root.loggedIn && !$root.userProfile"></player-component>-->

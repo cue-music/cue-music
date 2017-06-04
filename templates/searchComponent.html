@@ -83,11 +83,19 @@
     </div>
     <div class="main-column w-col w-col-5">
       <div class="share-button-container w-clearfix">
-        <div class="custom-button" id="share-button">Share</div>
+        <div class="custom-button" id="share-button" ng-click="vm.showShare = true">Share</div>
+      </div>
+      <div ng-show="vm.showShare">
+        <div>
+          Here is a URL you can use to share your playlist!
+        </div>
+        <div >
+          {{vm.share()}}
+        </div>
       </div>
       <div class="playlst-info-container w-container">
         <h4 class="heading" id="playlist-title">{{vm.playlist.title}}</h4>
-        <div class="text-block" id="username">Created by {{vm.name.split("@")[0]}}</div>
+        <div class="text-block" id="username">Created by {{vm.disName.split("@")[0]}}</div>
       </div>
       <div class="playlist-container">
         <div ng-class="{'playlist-item-container-selected': $root.currentIndex == $index}" class="playlist-item-container w-clearfix"

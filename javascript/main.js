@@ -3,6 +3,7 @@ var angular = require('angular');
 var firebase = require("firebase");
 var angularfire = require('angularfire');
 var spotify = require('angular-spotify');
+var ngRoute = require('angular-route');
 
 
 // Set up firebase
@@ -19,13 +20,14 @@ firebase.initializeApp(config);
 
 
 // Setup Module
-var app = angular.module('app', ["firebase", "spotify"]);
+var app = angular.module('app', ["firebase", "spotify", "ngRoute"]);
 
 app.config(function (SpotifyProvider) {
   SpotifyProvider.setClientId('f85ef2aa60924edbae2c811df6e5625c');
   SpotifyProvider.setRedirectUri('http://localhost:8080/callback.html');
   SpotifyProvider.setScope('user-read-private playlist-read-private playlist-modify-private playlist-modify-public');
 });
+
 
 //Angular Controllers
 require('./controllers/test-component-controller.js');
@@ -65,28 +67,4 @@ app.controller("MainCtrl", ['$scope', '$rootScope', 'httpService', function ($sc
     });
   }
 
-
-  // TODO: Remove this
-  $rootScope.currentPlaylist = {
-    "title": "My Playlist",
-    "time": 123466788,
-    "songs": [
-      {
-        artist: "V2RecordsNYC",
-        artwork: "https://i.ytimg.com/vi/kqLssKusGzM/default.jpg",
-        length: null,
-        source: "youtube",
-        source_id: "kqLssKusGzM",
-        title: "Josh Ritter - \"Girl In The War\""
-      },
-      {
-        artist: "Grace Davis",
-        artwork: "https://i1.sndcdn.com/artworks-000134001026-tugyco-large.jpg",
-        length: 300880,
-        source: "soundcloud",
-        source_id: 230155983,
-        title: "Hello - Adele"
-      }
-    ]
-  };
 }]);

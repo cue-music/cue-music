@@ -1,7 +1,36 @@
 var firebase = require("firebase");
-angular.module('app').controller("SearchController", ['$rootScope', 'httpService', '$firebaseArray', function ($rootScope, httpService, $firebaseArray) {
+angular.module('app').controller("SearchController", ['$rootScope', 'httpService', '$firebaseArray', '$firebaseObject', function ($rootScope, httpService, $firebaseArray, $firebaseObject) {
     var vm = this;
+
     vm.results = false;
+
+    console.log($rootScope.currentPlaylist);
+
+    vm.disName = vm.name;
+    vm.disUser = vm.user;
+
+    if ($rootScope.isShared) {
+        sharedUser = $rootScope.sharedInfo["user"];
+        sharedPlaylist = $rootScope.sharedInfo["playlist"];
+
+        playlistRef = firebase.database().ref().child("users").child(sharedUser).child("playlists").child(sharedPlaylist);
+        playlist = $firebaseObject(playlistRef);
+        $rootScope.currentPlaylist = playlist;
+
+        emailRef = firebase.database().ref().child("users").child(sharedUser).child('email');
+        email = $firebaseObject(emailRef);
+        email.$loaded().then(function () {
+            vm.disUser = {
+                uid: sharedUser,
+                email: email
+            };
+
+            vm.disName = email.$value;
+            console.log(email.$value);
+
+        })
+    }
+
     // Set up checkboxes
     vm.searchSoundcloud = true;
     vm.searchYoutube = true;
@@ -34,8 +63,8 @@ angular.module('app').controller("SearchController", ['$rootScope', 'httpService
     vm.addSong = function (result) {
         var length = millisToMinutesAndSeconds(result.length);
         var newCount = vm.playlist.songCount + 1;
-        firebase.database().ref().child("users").child(vm.user.uid).child("playlists").child(vm.playlist.$id).child("songCount").set(newCount);
-        firebase.database().ref().child("users").child(vm.user.uid).child("playlists").child(vm.playlist.$id).child("songs").push({
+        firebase.database().ref().child("users").child(vm.disUser.uid).child("playlists").child(vm.playlist.$id).child("songCount").set(newCount);
+        firebase.database().ref().child("users").child(vm.disUser.uid).child("playlists").child(vm.playlist.$id).child("songs").push({
             title: result.title,
             length: length,
             artist: result.artist,
@@ -55,7 +84,7 @@ angular.module('app').controller("SearchController", ['$rootScope', 'httpService
         swidget.pause();
 
 
-        var songRef = firebase.database().ref().child("users").child(vm.user.uid).child("playlists").child(vm.playlist.$id).child("songs");
+        var songRef = firebase.database().ref().child("users").child(vm.disUser.uid).child("playlists").child(vm.playlist.$id).child("songs");
         var array = $firebaseArray(songRef);
         console.log(array);
         array.$loaded().then(function () {
@@ -129,6 +158,18 @@ angular.module('app').controller("SearchController", ['$rootScope', 'httpService
         }
 
         vm.loadSong(prevIndex);
+    }
+
+
+
+    vm.showShare = false;
+    vm.share = function () {
+        if (vm.disUser && vm.playlist) {
+            shareUrl = location.origin + "/?user=" + vm.disUser.uid + "&playlist=" + vm.playlist.$id;
+            return shareUrl;
+        } else {
+            return "Something went wrong!";
+        }
     }
 
 }]);
