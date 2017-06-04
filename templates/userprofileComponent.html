@@ -1,22 +1,33 @@
 <div class="w-row">
-    <div class="column w-col w-col-3"><img class="image" src="images/C-Drop-Shawdow_1.png">
-      <h2 class="heading-5">{{vm.name.split("@")[0]}}</h2>
-    </div>
-    <div class="column-2 w-col w-col-9">
-      <div class="div-block">
-        <div class="savedplaylist verticalalignflex w-clearfix">
-          <h1 class="heading-2">Saved Playlists</h1><a class="button w-button" href="#" id="createNewButton" ng-click="vm.addPlaylist()">Create New</a>
-        </div>
-        <ul class="unordered-list w-list-unstyled">
-          <li class="list-item" ng-repeat="playlist in vm.playlists | orderBy : 'time'">
-            <div class="verticalalignflex w-clearfix">
-              <div class="text-block-5"><strong class="playlistname">{{playlist.title}}</strong>
-              </div>
-              <div class="text-block-6 w-clearfix"><strong class="number-of-tracks">{{playlist.songs}}</strong>
-              </div><img class="playlists-three-dot" data-ix="new-interaction" sizes="20px" src="images/Artboard-1.png" srcset="images/Artboard-1-p-500.png 500w, images/Artboard-1.png 576w" width="20">
-            </div>
-          </li>
-        </ul>
+  <div class="column w-col w-col-3"><img class="image" src="images/C-Drop-Shawdow_1.png">
+    <h2 class="heading-5">{{vm.name.split("@")[0]}}</h2>
+  </div>
+  <div class="column-2 w-col w-col-9">
+    <div class="div-block">
+      <div class="savedplaylist verticalalignflex w-clearfix">
+        <h1 class="heading-2">Saved Playlists</h1><a class="button w-button" href="#" id="createNewButton" ng-click="vm.createNew = true;">Create New</a>
       </div>
+      <div class="createNewPlaylist" ng-show="vm.createNew">
+        <h3 class="newPlaylistHeading">New Playlist</h3>
+        <form>
+          <input id="playlistNameInput" type="text" name="newPlaylistName" placeholder="Enter playlist name" ng-model="vm.playlistName">
+          <div>
+            <input class="newPlaylistButton" type="submit" name="create" value="Create" ng-click="vm.addPlaylist()">
+            <button class="newPlaylistButton" id="newPlaylistCancel" ng-click="vm.createNew = false;">Cancel</button>
+          </div>
+        </form>
+      </div>
+      <ul class="unordered-list w-list-unstyled">
+        <li class="list-item" ng-repeat="playlist in vm.playlists | orderBy : 'time'" >
+          <div class="verticalalignflex w-clearfix">
+            <div class="text-block-5" style="cursor: pointer;" ng-click="vm.openPlaylist(playlist)"><strong class="playlistname">{{playlist.title}}</strong>
+            </div>
+            <div class="text-block-6 w-clearfix"><strong class="number-of-tracks">{{playlist.songCount}}</strong>
+            </div><img class="playlists-three-dot" data-ix="new-interaction" sizes="20px" src="images/Artboard-1.png" srcset="images/Artboard-1-p-500.png 500w, images/Artboard-1.png 576w"
+              width="20">
+          </div>
+        </li>
+      </ul>
     </div>
   </div>
+</div>

@@ -10,6 +10,7 @@ angular.module("app").service('httpService', ['$http', function ($http) {
      */
     this.search = function (youtube, soundcloud, searchTerm) {
         var that = this;
+        console.log(searchTerm);
 
         return new Promise(function (resolve, reject) {
             youtubeDone = false;

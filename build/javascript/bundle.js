@@ -11,7 +11,12 @@ angular.module('app').component('playerComponent', {
 angular.module('app').component('searchComponent', {
         templateUrl: './templates/searchComponent.html',
         controllerAs: 'vm',
-        controller: "SearchController"
+        controller: "SearchController",
+        bindings: {
+            playlist: "=",
+            name: "=",
+            user: "="
+        }
     });
 },{}],3:[function(require,module,exports){
 angular.module('app').component('signinComponent', {
@@ -54,34 +59,224 @@ angular.module('app').component('userprofileComponent', {
     });
 },{}],7:[function(require,module,exports){
 var firebase = require("firebase");
-angular.module('app').controller("PlayerController", [function () {
+angular.module('app').controller("PlayerController", ["$rootScope", function ($rootScope) {
     var vm = this
-    
+
+    $rootScope.isPaused = true;
+
+
+    vm.loadSong = function (index) {
+        console.log("loading song: " + index);
+
+        // Stop other playing songs
+        yplayer.pauseVideo();
+        swidget.pause();
+
+        song = $rootScope.currentPlaylist.songs[index]
+
+        $rootScope.currentSong = song;
+        $rootScope.currentIndex = index;
+
+        if (song.source == "youtube") {
+            yplayer.loadVideoById(song.source_id);
+        } else {
+            var scUrl = "https://api.soundcloud.com/tracks/" + song.source_id
+            console.log(scUrl);
+            swidget.load(scUrl, {
+                callback: function () {
+                    swidget.play();
+                }
+            });
+        }
+
+        $rootScope.isPaused = false;
+    }
+
+
+    vm.test = function() {
+        console.log(test);
+    }
+
+
+    vm.toggleSong = function () {
+        if (!$rootScope.isPaused) {
+            swidget.pause();
+            yplayer.pauseVideo();
+
+            $rootScope.isPaused = true;
+        } else {
+            if ($rootScope.currentSong.source == "youtube") {
+                yplayer.playVideo();
+            } else {
+                swidget.play();
+            }
+            $rootScope.isPaused = false;
+        }
+
+    }
+
+
+    vm.getArtwork = function () {
+        try {
+            return $rootScope.currentSong.artwork;
+        } catch (e) {
+            return "images/C-Drop-Shawdow_1.png"
+        }
+    }
+
+    vm.nextSong = function() {
+        var nextIndex = $rootScope.currentIndex + 1;
+        if (nextIndex >= $rootScope.currentPlaylist.songs.length) {
+            nextIndex = 0;
+        }
+
+        vm.loadSong(nextIndex);
+    }
+
+    vm.previousSong = function() {
+        var prevIndex = $rootScope.currentIndex - 1;
+        if (prevIndex < 0) {
+            prevIndex = $rootScope.currentPlaylist.songs.length - 1;
+        }
+
+        vm.loadSong(prevIndex);
+    }
+
 }]);
 },{"firebase":23}],8:[function(require,module,exports){
 var firebase = require("firebase");
-angular.module('app').controller("SearchController", ['httpService', function (httpService) {
+angular.module('app').controller("SearchController", ['$rootScope', 'httpService', '$firebaseArray', function ($rootScope, httpService, $firebaseArray) {
     var vm = this;
-
+    vm.results = false;
     // Set up checkboxes
     vm.searchSoundcloud = true;
     vm.searchYoutube = true;
-
-
     vm.search = function () {
         if (!vm.searchSoundcloud && !vm.searchYoutube) {
             alert("Please select at least one service to search.");
         } else {
+
             httpService.search(vm.searchYoutube, vm.searchSoundcloud, vm.searchTerm).then(
-                function(songs) {
+                function (songs) {
+                    vm.results = true;
                     console.log(songs);
+                    vm.soundcloudResults = songs.soundcloud;
+                    vm.youtubeResults = songs.youtube;
+
                 },
-                function(err) {
+                function (err) {
                     console.log(err);
                 }
             )
         }
     }
+
+    function millisToMinutesAndSeconds(millis) {
+        var minutes = Math.floor(millis / 60000);
+        var seconds = ((millis % 60000) / 1000).toFixed(0);
+        return (seconds == 60 ? (minutes + 1) + ":00" : minutes + ":" + (seconds < 10 ? "0" : "") + seconds);
+    }
+
+    vm.addSong = function (result) {
+        var length = millisToMinutesAndSeconds(result.length);
+        var newCount = vm.playlist.songCount + 1;
+        firebase.database().ref().child("users").child(vm.user.uid).child("playlists").child(vm.playlist.$id).child("songCount").set(newCount);
+        firebase.database().ref().child("users").child(vm.user.uid).child("playlists").child(vm.playlist.$id).child("songs").push({
+            title: result.title,
+            length: length,
+            artist: result.artist,
+            artwork: result.artwork,
+            source: result.source,
+            source_id: result.source_id
+        });
+    }
+
+
+    $rootScope.isPaused = true;
+
+
+    vm.loadSong = function (index) {
+        // Stop other playing songs
+        yplayer.pauseVideo();
+        swidget.pause();
+
+
+        var songRef = firebase.database().ref().child("users").child(vm.user.uid).child("playlists").child(vm.playlist.$id).child("songs");
+        var array = $firebaseArray(songRef);
+        console.log(array);
+        array.$loaded().then(function () {
+            song = array[index]
+
+            $rootScope.currentSong = song;
+            $rootScope.currentIndex = index;
+
+            if (song.source == "youtube") {
+                yplayer.loadVideoById(song.source_id);
+            } else {
+                var scUrl = "https://api.soundcloud.com/tracks/" + song.source_id
+                console.log(scUrl);
+                swidget.load(scUrl, {
+                    callback: function () {
+                        swidget.play();
+                    }
+                });
+            }
+
+            $rootScope.isPaused = false;
+        });
+    }
+
+
+    vm.toggleSong = function () {
+        if (!$rootScope.isPaused) {
+            swidget.pause();
+            yplayer.pauseVideo();
+
+            $rootScope.isPaused = true;
+        } else {
+            if ($rootScope.currentSong.source == "youtube") {
+                yplayer.playVideo();
+            } else {
+                swidget.play();
+            }
+            $rootScope.isPaused = false;
+        }
+
+    }
+
+
+    vm.getArtwork = function (song) {
+        if (song) {
+            artwork = song.artwork;
+            if (!artwork) {
+                return "images/C-Drop-Shawdow_1.png";
+            } else {
+                return artwork;
+            }
+
+        } else {
+            return "images/C-Drop-Shawdow_1.png";
+        }
+    }
+
+    vm.nextSong = function () {
+        var nextIndex = $rootScope.currentIndex + 1;
+        if (nextIndex >= $rootScope.currentPlaylist.songs.length) {
+            nextIndex = 0;
+        }
+
+        vm.loadSong(nextIndex);
+    }
+
+    vm.previousSong = function () {
+        var prevIndex = $rootScope.currentIndex - 1;
+        if (prevIndex < 0) {
+            prevIndex = $rootScope.currentPlaylist.songs.length - 1;
+        }
+
+        vm.loadSong(prevIndex);
+    }
+
 }]);
 },{"firebase":23}],9:[function(require,module,exports){
 var firebase = require("firebase");
@@ -95,8 +290,6 @@ angular.module('app').controller("SigninController", ["$scope", "$rootScope", "S
             var form = document.getElementById("email-form");
             form.reset();
             $rootScope.user = userData;
-            //console.log(userData);
-            vm.login();
             $rootScope.loggedIn = true;
             $rootScope.userProfile = true;
             var playlistRef = firebase.database().ref().child("users").child(userData.uid).child("playlists");
@@ -122,7 +315,6 @@ angular.module('app').controller("SigninController", ["$scope", "$rootScope", "S
                   playlists: 0
 			    });
                 $rootScope.user = userData;
-                vm.login();
                 $rootScope.loggedIn = true;
                 $rootScope.userProfile = true;
             }).catch(function (error) {
@@ -130,17 +322,6 @@ angular.module('app').controller("SigninController", ["$scope", "$rootScope", "S
                 console.log(errorMessage);
             });
         }
-    }
-
-    //login user with spotify
-    vm.login = function () {
-        Spotify.login(true).then(function (data) {
-            Spotify.getCurrentUser().then(function (user) {
-                //vm.username = user.id;
-                //console.log("vm.username");
-                //console.log(user);
-            });
-        });
     }
 
 }]);
@@ -158,14 +339,22 @@ angular.module('app').controller("TestController", ["$scope", function($scope) {
 var firebase = require("firebase");
 angular.module('app').controller("UserprofileController", ["$scope", "$rootScope", function ($scope, $rootScope) {
     var vm = this
+    vm.createNew = false;
     vm.addPlaylist = function() {
         firebase.database().ref().child("users").child($rootScope.user.uid).child("playlists").push({
-            title: "A Playlist",
+            title: vm.playlistName,
             songs: 0,
+            songCount: 0,
             time: firebase.database.ServerValue.TIMESTAMP
         });
+        vm.playlistName = "";
+        vm.createNew = false;
     }
 
+    vm.openPlaylist = function(playlist) {
+        $rootScope.userProfile = false;
+        $rootScope.currentPlaylist = playlist; 
+    }
 }]);
 },{"firebase":23}],13:[function(require,module,exports){
 // External Libaries
@@ -187,21 +376,6 @@ var config = {
 
 firebase.initializeApp(config);
 
-
-
-
-
-
-// SC.connect().then(function() {
-//   return SC.get('/me');
-// }).then(function(me) {
-//   alert('Hello, ' + me.username);
-// });
-
-// // stream track id 293
-// SC.stream('/tracks/293').then(function(player){
-//   player.play();
-// });
 
 // Setup Module
 var app = angular.module('app', ["firebase", "spotify"]);
@@ -236,6 +410,7 @@ app.controller("MainCtrl", ['$scope', '$rootScope', 'httpService', function ($sc
   $scope.name = "Alex";
   $rootScope.loggedIn = false;
   $rootScope.userProfile = false;
+  $rootScope.currentPlaylist = false;
 
   console.log("main ctrl loaded");
   $scope.logOut = function () {
@@ -250,14 +425,29 @@ app.controller("MainCtrl", ['$scope', '$rootScope', 'httpService', function ($sc
   }
 
 
-  $scope.playVideo = function () {
-    console.log("playing video")
-    player.playVideo();
-  }
-
-  $scope.pauseVideo = function() {
-    player.pauseVideo();
-  }
+  // TODO: Remove this
+  $rootScope.currentPlaylist = {
+    "title": "My Playlist",
+    "time": 123466788,
+    "songs": [
+      {
+        artist: "V2RecordsNYC",
+        artwork: "https://i.ytimg.com/vi/kqLssKusGzM/default.jpg",
+        length: null,
+        source: "youtube",
+        source_id: "kqLssKusGzM",
+        title: "Josh Ritter - \"Girl In The War\""
+      },
+      {
+        artist: "Grace Davis",
+        artwork: "https://i1.sndcdn.com/artworks-000134001026-tugyco-large.jpg",
+        length: 300880,
+        source: "soundcloud",
+        source_id: 230155983,
+        title: "Hello - Adele"
+      }
+    ]
+  };
 }]);
 
 },{"./components/player-component.js":1,"./components/search-component.js":2,"./components/signin-component.js":3,"./components/smallplayer-component.js":4,"./components/test-component.js":5,"./components/userprofile-component.js":6,"./controllers/player-component-controller.js":7,"./controllers/search-component-controller.js":8,"./controllers/signin-component-controller.js":9,"./controllers/smallplayer-component-controller.js":10,"./controllers/test-component-controller.js":11,"./controllers/userprofile-component-controller.js":12,"./services/http-service.js":14,"angular":17,"angular-spotify":15,"angularfire":19,"firebase":23}],14:[function(require,module,exports){
@@ -273,6 +463,7 @@ angular.module("app").service('httpService', ['$http', function ($http) {
      */
     this.search = function (youtube, soundcloud, searchTerm) {
         var that = this;
+        console.log(searchTerm);
 
         return new Promise(function (resolve, reject) {
             youtubeDone = false;
