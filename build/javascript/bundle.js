@@ -457,6 +457,12 @@ angular.module('app').controller("UserprofileController", ["$scope", "$rootScope
         yplayer.pauseVideo();
         swidget.pause();
     }
+
+
+    vm.deletePlaylist = function (playlist) {
+        var pId = playlist.$id;
+        firebase.database().ref().child("users").child($rootScope.user.uid).child("playlists").child(pId).remove();
+    }
 }]);
 },{"firebase":25}],13:[function(require,module,exports){
 // External Libaries
