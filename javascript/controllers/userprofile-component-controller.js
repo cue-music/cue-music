@@ -1,8 +1,8 @@
 var firebase = require("firebase");
-angular.module('app').controller("UserprofileController", ["$scope", "$rootScope","$firebaseArray", function ($scope, $rootScope, $firebaseArray) {
+angular.module('app').controller("UserprofileController", ["$scope", "$rootScope", "$firebaseArray", function ($scope, $rootScope, $firebaseArray) {
     var vm = this
     vm.createNew = false;
-    vm.addPlaylist = function() {
+    vm.addPlaylist = function () {
         console.log($rootScope.user);
         firebase.database().ref().child("users").child($rootScope.user.uid).child("playlists").push({
             title: vm.playlistName,
@@ -14,10 +14,16 @@ angular.module('app').controller("UserprofileController", ["$scope", "$rootScope
         vm.createNew = false;
     }
 
-    vm.openPlaylist = function(playlist) {
+    vm.openPlaylist = function (playlist) {
         $rootScope.userProfile = false;
         var plRef = firebase.database().ref().child("users").child($rootScope.user.uid).child("playlists").child(playlist.$id).child("songs");
-        $rootScope.currentPlaylist = $firebaseArray(plRef); 
+        $rootScope.currentPlaylist = $firebaseArray(plRef);
         $rootScope.currentPlaylistId = playlist.$id;
+        $rootScope.currentPlaylistUser = $rootScope.user;
+        $rootScope.currentSong = null;
+
+        // Stop other playing songs
+        yplayer.pauseVideo();
+        swidget.pause();
     }
 }]);

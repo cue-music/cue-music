@@ -4,32 +4,31 @@ angular.module('app').controller("SearchController", ['$rootScope', 'httpService
 
     vm.results = false;
 
-    console.log($rootScope.currentPlaylist);
+    if ($rootScope.isShared) {
+        $rootScope.isShared = false;
+        
+        sharedUser = $rootScope.sharedInfo["user"];
+        sharedPlaylist = $rootScope.sharedInfo["playlist"];
 
-    vm.disName = vm.name;
-    vm.user = vm.user;
+        $rootScope.currentPlaylistId = sharedPlaylist;
 
-    // if ($rootScope.isShared) {
-    //     sharedUser = $rootScope.sharedInfo["user"];
-    //     sharedPlaylist = $rootScope.sharedInfo["playlist"];
+        playlistRef = firebase.database().ref().child("users").child(sharedUser).child("playlists").child(sharedPlaylist).child("songs");
+        playlist = $firebaseObject(playlistRef);
+        $rootScope.currentPlaylist = playlist;
 
-    //     playlistRef = firebase.database().ref().child("users").child(sharedUser).child("playlists").child(sharedPlaylist);
-    //     playlist = $firebaseObject(playlistRef);
-    //     $rootScope.currentPlaylist = playlist;
+        emailRef = firebase.database().ref().child("users").child(sharedUser).child('email');
+        email = $firebaseObject(emailRef);
+        email.$loaded().then(function () {
+            $rootScope.currentPlaylistUser = {
+                uid: sharedUser,
+                email: email.$value
+            };
 
-    //     emailRef = firebase.database().ref().child("users").child(sharedUser).child('email');
-    //     email = $firebaseObject(emailRef);
-    //     email.$loaded().then(function () {
-    //         vm.user = {
-    //             uid: sharedUser,
-    //             email: email
-    //         };
+            vm.name = email.$value;
+            console.log(email.$value);
 
-    //         vm.disName = email.$value;
-    //         console.log(email.$value);
-
-    //     })
-    // }
+        })
+    }
 
     // Set up checkboxes
     vm.searchSoundcloud = true;
@@ -100,7 +99,7 @@ angular.module('app').controller("SearchController", ['$rootScope', 'httpService
         swidget.pause();
 
 
-        var songRef = firebase.database().ref().child("users").child(vm.user.uid).child("playlists").child($rootScope.currentPlaylistId).child("songs");
+        var songRef = firebase.database().ref().child("users").child($rootScope.currentPlaylistUser.uid).child("playlists").child($rootScope.currentPlaylistId).child("songs");
         var array = $firebaseArray(songRef);
         console.log(array);
         array.$loaded().then(function () {
@@ -181,7 +180,7 @@ angular.module('app').controller("SearchController", ['$rootScope', 'httpService
     vm.showShare = false;
     vm.share = function () {
         if (vm.user && vm.playlist) {
-            shareUrl = location.origin + "/?user=" + vm.user.uid + "&playlist=" + vm.playlist.$id;
+            shareUrl = location.origin + "/?user=" + vm.user.uid + "&playlist=" + $rootScope.currentPlaylistId;
             return shareUrl;
         } else {
             return "Something went wrong!";
