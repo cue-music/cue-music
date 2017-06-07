@@ -1577,14 +1577,14 @@ textarea.w-select {
 .w-nav[data-collapse="all"] .w-nav-button {
   display: block;
 }
-@media screen and (max-width: 991px) {
+/*@media screen and (max-width: 991px) {
   .w-nav[data-collapse="medium"] .w-nav-menu {
     display: none;
   }
   .w-nav[data-collapse="medium"] .w-nav-button {
     display: block;
   }
-}
+}*/
 @media screen and (max-width: 767px) {
   .w-nav[data-collapse="small"] .w-nav-menu {
     display: none;
