@@ -19,6 +19,8 @@ angular.module('app').controller("SigninController", ["$scope", "$rootScope", "S
             // Handle Errors here.
             var errorCode = error.code;
             var errorMessage = error.message;
+            vm.signInErrorMessage = errorMessage;
+            $scope.$apply();
             console.log(errorMessage);
         });
     }
@@ -47,6 +49,8 @@ angular.module('app').controller("SigninController", ["$scope", "$rootScope", "S
                 alert("Please sign to your new account.");
             }).catch(function (error) {
                 var errorMessage = error.message;
+                vm.errorMessage = errorMessage;
+                $scope.$apply();
                 console.log(errorMessage);
             });
         }

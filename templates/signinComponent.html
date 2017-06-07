@@ -6,15 +6,20 @@
       <div class="w-col w-col-6">
         <div>
           <div class="signinform w-form" id="signInForm" ng-show="!vm.showSignup">
-            <form class="w-clearfix" data-name="Email-Form" id="email-form" name="email-form" ng-submit="vm.signin()" novalidate>
+            <div>{{vm.signInErrorMessage}}</div>
+            <form class="w-clearfix" id="email-form" name="signInForm" ng-submit="vm.signin()" novalidate>
+
               <label class="field-label-2" for="name"><span class="text-span">Email</span>:</label>
               <input class="roundedinput w-input" maxlength="256" placeholder="Enter your email"
-                type="email" ng-model="vm.signinEmail">
+                type="email" name="email" ng-model="vm.signinEmail" required="">
+              <div ng-show="signInForm.email.$error.email && signInForm.email.$touched">That is not a valid email</div>
+              
               <label class="field-label" for="email">Password:</label>
               <input class="roundedinput w-input" data-name="Email" id="email" maxlength="256" placeholder="Enter your password"
-                required="required" type="password" ng-model="vm.signinPwd">
+                required="required" type="password" ng-model="vm.signinPwd" ng-minlength="6" required="">
+              
               <input class="roundedb w-button" id="signupButton" value="Sign Up" ng-click="vm.showSignup = true;">
-              <input class="submit-button w-button" data-wait="Please wait..." type="submit" value="Sign In">
+              <input ng-class="{dis: signInForm.$invalid}" class="submit-button w-button" data-wait="Please wait..." type="submit" value="Sign In" ng-disabled="signInForm.$invalid">
             </form>
             <div class="w-form-done">
               <div>Thank you! Your submission has been received!</div>
@@ -24,18 +29,26 @@
             </div>
           </div>
           <div class="signupform w-form" id="signUpForm" ng-show="vm.showSignup" style="display: initial;">
-            <form class="w-clearfix" data-name="Email-Form-2" id="email-form-2" name="email-form-2" ng-submit="vm.signup()" novalidate>
+            <div>{{vm.errorMessage}}</div>
+            <form class="w-clearfix" id="email-form-2" ng-submit="vm.signup()" name="signUpForm" novalidate>
+              
               <label class="text-span" for="name-2">Email:</label>
-              <input class="roundedinput w-input" data-name="Name-2" id="name-2" maxlength="256" placeholder="Enter your email"
-                required="required" type="email" ng-model="vm.signupEmail">
+              <input class="roundedinput w-input" id="name-2" maxlength="256" placeholder="Enter your email"
+                required="required" type="email" ng-model="vm.signupEmail" name="email" required="">
+              <div ng-show="signUpForm.email.$error.email && signUpForm.email.$touched">That is not a valid email</div>
+
               <label class="text-span" for="email-2">Password (Must be 6 characters long)</label>
-              <input class="roundedinput w-input" data-name="Email-2" id="email-2" maxlength="256" placeholder="Enter your password"
-                required="required" type="password" ng-model="vm.signupPwd">
+              <input class="roundedinput w-input" name="pass1" id="email-2" maxlength="256" placeholder="Enter your password"
+                required="required" type="password" ng-model="vm.signupPwd" ng-minlength="6" required="">
+              <div ng-show="signUpForm.pass1.$touched && signUpForm.pass1.$invalid">Password must be 6 characters long</div>
+
               <label class="text-span" for="email-2">Comfirm Password</label>
-              <input class="roundedinput w-input" data-name="Email-2" id="email-2" maxlength="256" placeholder="Enter your password again"
-                required="required" type="password" ng-model="vm.signupPwd2">
+              <input class="roundedinput w-input" name="pass2" id="email-2" maxlength="256" placeholder="Enter your password again"
+                required="required" type="password" ng-model="vm.signupPwd2" ng-minlength="6" required="">
+              <div ng-show="signUpForm.pass2.$touched && (vm.signupPwd2 != vm.signupPwd || signUpForm.pass2.$invalid)">The passwords do not match</div>
+
               <input class="roundedb w-button" id="signupButton" value="Sign In" ng-click="vm.showSignup = false;">
-              <input class="submit-button w-button" data-wait="Please wait..." type="submit" value="Submit">
+              <input ng-class="{dis: signUpForm.$invalid || vm.signupPwd2 != vm.signupPwd}" class="submit-button w-button" data-wait="Please wait..." type="submit" value="Submit" ng-disabled="signUpForm.$invalid || vm.signupPwd2 != vm.signupPwd">
             </form>
             <div class="w-form-done">
               <div>Thank you! Your submission has been received!</div>
