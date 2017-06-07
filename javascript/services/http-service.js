@@ -41,7 +41,7 @@ angular.module("app").service('httpService', ['$http', function ($http) {
                                 source: "soundcloud",
                                 length: sResult.duration,
                                 source_id: sResult.id
-                                
+
                             }
                             songsResults.soundcloud.push(song)
                         }
@@ -70,6 +70,8 @@ angular.module("app").service('httpService', ['$http', function ($http) {
                         // Get songs
                         songs = resp.data.items;
 
+                        songString = "";
+
                         for (var i = 0; i < songs.length && i < 10; i++) {
                             sResult = songs[i];
                             song = {
@@ -79,16 +81,51 @@ angular.module("app").service('httpService', ['$http', function ($http) {
                                 source: "youtube",
                                 length: null,
                                 source_id: sResult.id.videoId
-                                
+
                             }
                             songsResults.youtube.push(song)
+
+                            songString += sResult.id.videoId
+                            if (i < songs.length - 1 && i < 9) {
+                                songString += ","
+                            }
                         }
 
+                        that.youtubeData(songString).then(
+                            function (resp) {
 
-                        // Return if both are done
-                        if (youtubeDone && soundDone) {
-                            resolve(songsResults)
-                        }
+                                console.log(resp);
+                                songData = resp.data.items;
+
+                                for (var i = 0; i < songData.length; i++) {
+                                    songId = songData[i].id;
+                                    songDuration = that.parseTime(songData[i].contentDetails.duration);
+
+                                    newYoutubeArr = []
+
+                                    for (var j = 0; j < songsResults.youtube.length; j++) {
+                                        song = songsResults.youtube[j]
+                                        if (song.source_id == songId) {
+                                            song.length = songDuration
+                                            newYoutubeArr.push(song);
+                                        }
+                                    }
+                                }
+
+                                songsResults.youtube = newYoutubeArr;
+
+                                // Return if both are done
+                                if (youtubeDone && soundDone) {
+                                    resolve(songsResults)
+                                }
+
+                            },
+                            function (err) {
+
+                            }
+                        )
+
+
                     },
                     function (err) {
                         reject(err);
@@ -100,6 +137,18 @@ angular.module("app").service('httpService', ['$http', function ($http) {
 
 
         });
+    }
+
+    this.parseTime = function(isoString) {
+        min = parseInt(isoString.substring(2).split("M")[0])
+        sec = parseInt(isoString.substring(2).split("M")[1].split("S")[0])
+
+        return (min * 60000) + (sec * 1000)
+    }
+
+    this.youtubeData = function (songString) {
+        var apiUrl = "https://www.googleapis.com/youtube/v3/videos?part=contentDetails&key=AIzaSyBrPwQw4Gxa1StVB7-jIHMKn0YDSBhrfQs&id=" + songString;
+        return $http.get(apiUrl);
     }
 
     /**
