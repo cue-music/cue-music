@@ -766,15 +766,9 @@ a {
   .main-column {
     box-shadow: none;
   }
-  .search-results {
-    display: none;
-  }
 }
 
 @media (max-width: 767px) {
-  .search-results {
-    display: none;
-  }
   .checkbox-field {
     display: inline-block;
   }
