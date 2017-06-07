@@ -1,3 +1,5 @@
+var moment = require("moment");
+
 angular.module("app").service('httpService', ['$http', function ($http) {
 
 
@@ -140,10 +142,8 @@ angular.module("app").service('httpService', ['$http', function ($http) {
     }
 
     this.parseTime = function(isoString) {
-        min = parseInt(isoString.substring(2).split("M")[0])
-        sec = parseInt(isoString.substring(2).split("M")[1].split("S")[0])
-
-        return (min * 60000) + (sec * 1000)
+        var m = moment.duration(isoString).asMilliseconds();
+        return m;
     }
 
     this.youtubeData = function (songString) {
