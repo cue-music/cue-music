@@ -1,5 +1,5 @@
 var firebase = require("firebase");
-angular.module('app').controller("SearchController", ['$rootScope', 'httpService', '$firebaseArray', '$firebaseObject', function ($rootScope, httpService, $firebaseArray, $firebaseObject) {
+angular.module('app').controller("SearchController", ['$scope', '$rootScope', 'httpService', '$firebaseArray', '$firebaseObject', function ($scope, $rootScope, httpService, $firebaseArray, $firebaseObject) {
     var vm = this;
 
     vm.results = false;
@@ -33,16 +33,20 @@ angular.module('app').controller("SearchController", ['$rootScope', 'httpService
     // Set up checkboxes
     vm.searchSoundcloud = true;
     vm.searchYoutube = true;
+    vm.soundcloudResults = [];
+    vm.youtubeResults = [];
+
     vm.search = function () {
         if (!vm.searchSoundcloud && !vm.searchYoutube) {
             alert("Please select at least one service to search.");
         } else {
             httpService.search(vm.searchYoutube, vm.searchSoundcloud, vm.searchTerm).then(
                 function (songs) {
+                    console.log("got songs back");
                     vm.results = true;
-                    console.log(songs);
                     vm.soundcloudResults = songs.soundcloud;
                     vm.youtubeResults = songs.youtube;
+                    $scope.$apply();
                 },
                 function (err) {
                     console.log(err);

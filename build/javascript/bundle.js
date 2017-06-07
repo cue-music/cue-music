@@ -145,7 +145,7 @@ angular.module('app').controller("PlayerController", ["$rootScope", function ($r
 }]);
 },{"firebase":25}],8:[function(require,module,exports){
 var firebase = require("firebase");
-angular.module('app').controller("SearchController", ['$rootScope', 'httpService', '$firebaseArray', '$firebaseObject', function ($rootScope, httpService, $firebaseArray, $firebaseObject) {
+angular.module('app').controller("SearchController", ['$scope', '$rootScope', 'httpService', '$firebaseArray', '$firebaseObject', function ($scope, $rootScope, httpService, $firebaseArray, $firebaseObject) {
     var vm = this;
 
     vm.results = false;
@@ -179,16 +179,20 @@ angular.module('app').controller("SearchController", ['$rootScope', 'httpService
     // Set up checkboxes
     vm.searchSoundcloud = true;
     vm.searchYoutube = true;
+    vm.soundcloudResults = [];
+    vm.youtubeResults = [];
+
     vm.search = function () {
         if (!vm.searchSoundcloud && !vm.searchYoutube) {
             alert("Please select at least one service to search.");
         } else {
             httpService.search(vm.searchYoutube, vm.searchSoundcloud, vm.searchTerm).then(
                 function (songs) {
+                    console.log("got songs back");
                     vm.results = true;
-                    console.log(songs);
                     vm.soundcloudResults = songs.soundcloud;
                     vm.youtubeResults = songs.youtube;
+                    $scope.$apply();
                 },
                 function (err) {
                     console.log(err);
@@ -542,7 +546,6 @@ angular.module("app").service('httpService', ['$http', function ($http) {
      */
     this.search = function (youtube, soundcloud, searchTerm) {
         var that = this;
-        console.log(searchTerm);
 
         return new Promise(function (resolve, reject) {
             youtubeDone = false;
@@ -626,7 +629,6 @@ angular.module("app").service('httpService', ['$http', function ($http) {
                         that.youtubeData(songString).then(
                             function (resp) {
 
-                                console.log(resp);
                                 songData = resp.data.items;
 
                                 for (var i = 0; i < songData.length; i++) {

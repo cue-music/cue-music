@@ -12,7 +12,6 @@ angular.module("app").service('httpService', ['$http', function ($http) {
      */
     this.search = function (youtube, soundcloud, searchTerm) {
         var that = this;
-        console.log(searchTerm);
 
         return new Promise(function (resolve, reject) {
             youtubeDone = false;
@@ -96,7 +95,6 @@ angular.module("app").service('httpService', ['$http', function ($http) {
                         that.youtubeData(songString).then(
                             function (resp) {
 
-                                console.log(resp);
                                 songData = resp.data.items;
 
                                 for (var i = 0; i < songData.length; i++) {
