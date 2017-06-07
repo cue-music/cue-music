@@ -57,6 +57,11 @@ app.controller("MainCtrl", ['$scope', '$rootScope', 'httpService', function ($sc
 
   console.log("main ctrl loaded");
   $scope.logOut = function () {
+    // Stop other playing songs
+    yplayer.pauseVideo();
+    swidget.pause();
+
+
     firebase.auth().signOut().then(function () {
       console.log("log out");
       $rootScope.loggedIn = false;
