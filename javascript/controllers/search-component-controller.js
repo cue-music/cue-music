@@ -184,7 +184,7 @@ angular.module('app').controller("SearchController", ['$scope', '$rootScope', 'h
     vm.showShare = false;
     vm.share = function () {
         if (vm.user && vm.playlist) {
-            shareUrl = location.origin + "/?user=" + vm.user.uid + "&playlist=" + $rootScope.currentPlaylistId;
+            shareUrl = location.origin + location.pathname + "?user=" + vm.user.uid + "&playlist=" + $rootScope.currentPlaylistId;
             return shareUrl;
         } else {
             return "Something went wrong!";
